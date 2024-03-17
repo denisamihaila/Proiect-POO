@@ -1,1 +1,1 @@
-# Proiect-POO Magazin Online
+# Magazin Online
