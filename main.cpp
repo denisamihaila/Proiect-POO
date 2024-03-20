@@ -1,7 +1,7 @@
 #include <fstream>
 #include <iostream>
-#include <vector>
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -10,9 +10,11 @@ class Produs {
 private:
     string numeProdus;
     string culoare;
-    vector<char> marimi; //XS, S, M, L, XL
+    string marime; //XS, S, M, L, XL
     float pret;
-    int stoc;
+    int id; //unic pentru fiecare produs
+    static int currentID;
+    static map <int, Produs*> produse;
 public:
     //getteri
     string getNumeProdus()
@@ -23,17 +25,17 @@ public:
     {
         return culoare;
     }
-    vector<char> getMarimi()
+    string getMarime()
     {
-        return marimi;
+        return marime;
     }
     float getPret()
     {
         return pret;
     }
-    int getStoc()
+    int getID()
     {
-        return stoc;
+        return id;
     }
     //setteri
     void setNumeProdus(string numeProdus)
@@ -50,12 +52,12 @@ public:
         else
             cout << "Culoarea produsului trebuie să aibă minim un caracter" << endl;
     }
-    void setMarimi(vector<char> marimi)
+    void setMarime(string marime)
     {
-        if (marimi.size() > 0)
-            this->marimi = marimi;
+        if (marime.size() > 0)
+            this->marime = marime;
         else
-            cout << "Produsul trebuie să aibă minim o mărime disponibilă" << endl;
+            cout << "Produsul trebuie să aibă o mărime disponibilă" << endl;
     }
     void setPret(float pret)
     {
@@ -64,24 +66,18 @@ public:
         else
             cout << "Prețul produsului nu poate fi un număr negativ" << endl;
     }
-    void setStoc(int stoc)
-    {
-        if(stoc >= 0)
-            this->stoc = stoc;
-        else
-            cout << "Stocul produsului nu poate fi un număr negativ" << endl;
-    }
     //constructor fara parametri
     Produs()
     {
-        this->numeProdus = "";
-        this->culoare = "";
-        this->marimi = {};
+        this->numeProdus = "-";
+        this->culoare = "-";
+        this->marime = "-";
         this->pret = 0;
-        this->stoc = 0;
+        this->id = currentID++;
+        produse[id] = this;
     }
     //constructor cu parametri
-    Produs(string numeProdus, string culoare, vector<char> marimi, float pret, int stoc)
+    Produs(string numeProdus, string culoare, string marime, float pret)
     {
         if (numeProdus.size() > 0)
             this->numeProdus = numeProdus;
@@ -93,8 +89,8 @@ public:
         else
             cout << "Culoarea produsului trebuie să aibă minim un caracter" << endl;
 
-        if (marimi.size() > 0)
-            this->marimi = marimi;
+        if (marime.size() > 0)
+            this->marime = marime;
         else
             cout << "Produsul trebuie să aibă minim o mărime disponibilă" << endl;
 
@@ -103,49 +99,65 @@ public:
         else
             cout << "Prețul produsului nu poate fi un număr negativ" << endl;
 
-        if(stoc >= 0)
-            this->stoc = stoc;
-        else
-            cout << "Stocul produsului nu poate fi un număr negativ" << endl;
+        this->id = currentID++;
+        produse[id] = this;
     }
     //constructor de copiere
     Produs(const Produs& p)
     {
         this->numeProdus = p.numeProdus;
         this->culoare = p.culoare;
-        this->marimi = p.marimi;
+        this->marime = p.marime;
         this->pret = p.pret;
-        this->stoc = p.stoc;
+        this->id = currentID++;
+        produse[id] = this;
     }
-    //supraincarcare operator =
+    //supraincarcare operator=
     Produs operator=(const Produs& p)
     {
         this->numeProdus = p.numeProdus;
         this->culoare = p.culoare;
-        this->marimi = p.marimi;
+        this->marime = p.marime;
         this->pret = p.pret;
-        this->stoc = p.stoc;
+        this->id = currentID++;
+        produse[id] = this;
         return *this;
     }
     //destructor
     ~Produs()
-    {}
-
-    friend ifstream& operator>>(ifstream& f, Produs& p);
-
-    friend ofstream& operator<<(ofstream& g, Produs& p)
     {
-        g << p.getNumeProdus() << " " << p.getCuloare() << " ";
-        for(auto& marime : p.getMarimi())
-        {
-            g << marime << " ";
-        }
-        g << p.getPret() << " " << p.getStoc() << endl;
+        produse.erase(id);
+    }
+
+    friend istream& operator>>(istream& f, Produs& p)
+    {
+        f >> p.numeProdus >> p.culoare >> p.marime >> p.pret;
+        return f;
+    }
+
+    friend ostream& operator<<(ostream& g, Produs& p)
+    {
+        g << p.getNumeProdus() << " " << p.getCuloare() << " " << p.getMarime() << p.getPret() << " " << endl;
         return g;
     }
+    static map <int, Produs*> obtineProdusele() {
+        return produse;
+    }
 };
+int Produs::currentID=0;
+map <int, Produs*> Produs::produse;
+class Utilizator {
+
+};
+
+class Comanda{
+
+};
+
 
 int main() {
 
+    /*Produs p1("rochie", "negru", "XS", 57);
+    cout<<p1.getNumeProdus()<<" "<<p1.getCuloare();*/
     return 0;
 }
