@@ -13,7 +13,7 @@ private:
     string marime; //XS, S, M, L, XL
     float pret;
     int id; //unic pentru fiecare produs
-    static int currentID;
+    static int IDprodus;
     static map <int, Produs*> produse;
 public:
     //getteri
@@ -73,7 +73,7 @@ public:
         this->culoare = "-";
         this->marime = "-";
         this->pret = 0;
-        this->id = currentID++;
+        this->id = IDprodus++;
         produse[id] = this;
     }
     //constructor cu parametri
@@ -99,7 +99,7 @@ public:
         else
             cout << "Prețul produsului nu poate fi un număr negativ" << endl;
 
-        this->id = currentID++;
+        this->id = IDprodus++;
         produse[id] = this;
     }
     //constructor de copiere
@@ -109,7 +109,7 @@ public:
         this->culoare = p.culoare;
         this->marime = p.marime;
         this->pret = p.pret;
-        this->id = currentID++;
+        this->id = IDprodus++;
         produse[id] = this;
     }
     //supraincarcare operator=
@@ -119,7 +119,7 @@ public:
         this->culoare = p.culoare;
         this->marime = p.marime;
         this->pret = p.pret;
-        this->id = currentID++;
+        this->id = IDprodus++;
         produse[id] = this;
         return *this;
     }
@@ -144,20 +144,133 @@ public:
         return produse;
     }
 };
-int Produs::currentID=0;
+
+int Produs::IDprodus=0;
 map <int, Produs*> Produs::produse;
+
 class Utilizator {
+    string numeUtilizator;
+    string email;
+    string parola;
+    int id; //unic pentru fiecare utilizator
+    static int IDutilizator;
+    static map<int, Utilizator*> utilizatori;
 
+public:
+    //getteri
+    string getNumeUtilizator()
+    {
+        return numeUtilizator;
+    }
+    string getEmail()
+    {
+        return email;
+    }
+    string getParola()
+    {
+        return parola;
+    }
+    int getID()
+    {
+        return id;
+    }
+    //setteri
+    void setNumeUtilizator(string numeUtilizator)
+    {
+        if(numeUtilizator.size() > 0)
+            this->numeUtilizator = numeUtilizator;
+        else
+            cout << "Numele utilizatorului trebuie să aibă minim un caracter" << endl;
+    }
+    void setEmail(string email)
+    {
+        if(email.size() > 0)
+            this->email = email;
+        else
+            cout << "Emailul trebuie să aibă minim un caracter" << endl;
+    }
+    void setParola(string parola)
+    {
+        if(parola.size() > 0)
+            this->parola = parola;
+        else
+            cout << "Parola trebuie să aibă minim un caracter" << endl;
+    }
+    //constructor fara parametri
+    Utilizator()
+    {
+        this->numeUtilizator = "-";
+        this->email = "-";
+        this->parola = "-";
+        this->id = IDutilizator++;
+        utilizatori[id] = this;
+    }
+    //constructor cu parametri
+    Utilizator(string numeUtilizator, string email, string parola)
+    {
+        if(numeUtilizator.size() > 0)
+            this->numeUtilizator = numeUtilizator;
+        else
+            cout << "Numele utilizatorului trebuie să aibă minim un caracter" << endl;
+
+        if(email.size() > 0)
+            this->email = email;
+        else
+            cout << "Emailul trebuie să aibă minim un caracter" << endl;
+
+        if(parola.size() > 0)
+            this->parola = parola;
+        else
+            cout << "Parola trebuie să aibă minim un caracter" << endl;
+
+        this->id = IDutilizator++;
+        utilizatori[id] = this;
+    }
+    //constructor de copiere
+    Utilizator(const Utilizator& u)
+    {
+        this->numeUtilizator = u.numeUtilizator;
+        this->email = u.email;
+        this->parola = u.parola;
+        this->id = IDutilizator++;
+        utilizatori[id] = this;
+    }
+    //supraincarcare operator=
+    Utilizator operator=(const Utilizator& u)
+    {
+        this->numeUtilizator = u.numeUtilizator;
+        this->email = u.email;
+        this->parola = u.parola;
+        this->id = IDutilizator++;
+        utilizatori[id] = this;
+        return *this;
+    }
+    //destructor
+    ~Utilizator()
+    {
+        utilizatori.erase(id); //posibil sa fie nevoie sa pun this->id;
+    }
+    static map<int, Utilizator*> obtineUtilizatorii() {
+        return utilizatori;
+    }
+    friend istream& operator>>(istream& f, Utilizator& u)
+    {
+        f >> u.numeUtilizator >> u.email >> u.parola;
+        return f;
+    }
 };
-
+int Utilizator::IDutilizator=0;
+map<int, Utilizator*> utilizatori;
 class Comanda{
 
 };
 
-
+class Inceput{
+    //daca introducem 0, vrem sa adaugam produse
+    //daca introducem 1, vrem sa cumparam produse
+};
 int main() {
 
-    /*Produs p1("rochie", "negru", "XS", 57);
-    cout<<p1.getNumeProdus()<<" "<<p1.getCuloare();*/
+
     return 0;
 }
