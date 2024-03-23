@@ -18,15 +18,15 @@ private:
     static map<int, Produs *> produse; //key = id
 public:
     //getteri
-    string getNumeProdus() {
+    string getNumeProdus() const {
         return numeProdus;
     }
 
-    string getCuloare() {
+    string getCuloare() const {
         return culoare;
     }
 
-    string getMarime() {
+    string getMarime() const {
         return marime;
     }
 
@@ -60,7 +60,7 @@ public:
             cout << "Produsul trebuie să aibă o mărime disponibilă" << endl;
     }
 
-    void setPret(float const& pretP) {
+    void setPret(float const &pretP) {
         if (pretP >= 0)
             this->pret = pretP;
         else
@@ -78,7 +78,7 @@ public:
     }
 
     //constructor cu parametri
-    Produs(string const& numeProdus, string const& culoare, string const& marime, float const& pret) {
+    Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret) {
         if (!numeProdus.empty())
             this->numeProdus = numeProdus;
         else
@@ -102,8 +102,8 @@ public:
         this->id = IDprodus++;
         produse[id] = this;
     }
-    /*
-    //constructor de copiere
+
+    /*//constructor de copiere
     Produs(const Produs &p) {
         this->numeProdus = p.numeProdus;
         this->culoare = p.culoare;
@@ -114,7 +114,7 @@ public:
     }
 
     //supraincarcare operator=
-    Produs operator=(const Produs &p) {
+    Produs &operator=(const Produs &p) {
         this->numeProdus = p.numeProdus;
         this->culoare = p.culoare;
         this->marime = p.marime;
@@ -122,8 +122,8 @@ public:
         this->id = IDprodus++;
         produse[id] = this;
         return *this;
-    }
-    */
+    }*/
+
     //destructor
     ~Produs() = default;
 
@@ -156,19 +156,19 @@ class Utilizator {
 
 public:
     //getteri
-    string getNumeUtilizator() {
+    string getNumeUtilizator() const {
         return numeUtilizator;
     }
 
-    string getNume() {
+    string getNume() const {
         return nume;
     }
 
-    string getEmail() {
+    string getEmail() const {
         return email;
     }
 
-    string getParola() {
+    string getParola() const {
         return parola;
     }
 
@@ -177,36 +177,39 @@ public:
     }
 
     //setteri
-    void setNumeUtilizator(string const& numeUtilizator) {
-        if (!numeUtilizator.empty())
-            this->numeUtilizator = numeUtilizator;
+    void setNumeUtilizator(string const &nume_utilizator) {
+        if (!nume_utilizator.empty())
+            this->numeUtilizator = nume_utilizator;
         else
             cout << "Numele utilizatorului trebuie sa aiba minim un caracter" << endl;
     }
 
-    void setNume(string const& nume) {
-        if (!nume.empty())
-            this->nume = nume;
+    void setNume(string const &Nume) {
+        if (!Nume.empty())
+            this->nume = Nume;
         else
             cout << "Numele trebuie sa aiba minim un caracter" << endl;
     }
 
-    void setEmail(string const& email) {
-        if (!email.empty())
-            this->email = email;
+    void setEmail(string const &Email) {
+        if (!Email.empty())
+            this->email = Email;
         else
             cout << "Emailul trebuie sa aiba minim un caracter" << endl;
     }
 
-    void setParola(string const& parola) {
-        if (!parola.empty())
-            this->parola = parola;
+    void setParola(string const &Parola) {
+        if (!Parola.empty())
+            this->parola = Parola;
         else
             cout << "Parola trebuie sa aiba minim un caracter" << endl;
     }
 
-    void setBuget(float buget) {
-        this->buget = buget;
+    void setBuget(float const &Buget) {
+        if(Buget >= 0)
+            this->buget = Buget;
+        else
+            cout << "Bugetul trebuie sa fie un numar pozitiv!" << endl;
     }
 
     //constructor fara parametri
@@ -215,12 +218,13 @@ public:
         this->nume = "-";
         this->email = "-";
         this->parola = "-";
-        this->buget = 0;
+        this->buget = 0.0;
         utilizatori[numeUtilizator] = this;
     }
 
     //constructor cu parametri
-    Utilizator(string const& numeUtilizator, string const& nume, string const& email, string const& parola, float const& buget) {
+    Utilizator(string const &numeUtilizator, string const &nume, string const &email, string const &parola,
+               float const &buget) {
         if (!numeUtilizator.empty())
             this->numeUtilizator = numeUtilizator;
         else
@@ -241,7 +245,10 @@ public:
         else
             cout << "Parola trebuie sa aiba minim un caracter" << endl;
 
-        this->buget = buget;
+        if(buget >= 0)
+            this->buget = buget;
+        else
+            cout << "Bugetul trebuie sa fie un numar pozitiv!" << endl;
 
         utilizatori[numeUtilizator] = this;
 
@@ -258,7 +265,7 @@ public:
     }
 
     //supraincarcare operator=
-    Utilizator& operator=(const Utilizator &u) {
+    Utilizator &operator=(const Utilizator &u) {
         this->numeUtilizator = u.numeUtilizator;
         this->nume = u.nume;
         this->email = u.email;
@@ -274,7 +281,7 @@ public:
     }
 
     friend istream &operator>>(istream &f, Utilizator &u) {
-        f >> u.numeUtilizator >> u.email >> u.parola >> u.buget;
+        f >> u.numeUtilizator >> u.nume >> u.email >> u.parola >> u.buget;
         return f;
     }
 
@@ -310,40 +317,52 @@ class Magazin {
 private:
     string numeCont;
 public:
+    //setter
+    void setNumeCont (string const& numecont){
+        this->numeCont = numecont;
+    }
     void autentificare() {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ AUTENTIFICARE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << " Intruduceti numele de utilizator: ";
         string numeIntrodus;
         cin >> numeIntrodus;
+        if (!(Utilizator::utilizatori.find(numeIntrodus) != Utilizator::utilizatori.end())) {
+            do {
+                cout << "Nu exista acest nume de utilizator. Va rugam sa incercati din nou: ";
+                cin >> numeIntrodus;
+            } while (!(Utilizator::utilizatori.find(numeIntrodus) != Utilizator::utilizatori.end()));
+        }
         if (Utilizator::utilizatori.find(numeIntrodus) != Utilizator::utilizatori.end()) //exista username-ul
         {
             cout << "Introduceti parola: ";
             string parolaIntrodusa;
             cin >> parolaIntrodusa;
+            if (Utilizator::utilizatori[numeIntrodus]->getParola() != parolaIntrodusa)
+                do {
+                    cout << "Parola incorecta. Va rugam reintroduceti parola: ";
+                    cin >> parolaIntrodusa;
+                } while (Utilizator::utilizatori[numeIntrodus]->getParola() != parolaIntrodusa);
             if (Utilizator::utilizatori[numeIntrodus]->getParola() == parolaIntrodusa) {
                 this->numeCont = numeIntrodus;
                 cout << "V-ati conectat cu succes!\n";
-            } else
-                cout << "Parola incorecta\n";
-        } else
-            cout << "Nu exista acest nume de utilizator\n";
+            }
+        }
 
     }
 
-    void creareCont() {
-        Utilizator utilizatorNou;
+    static void creareCont(Utilizator contNou) {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREARE CONT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << " Intruduceti un nume de utilizator: ";
         string numeUtilizator;
         cin >> numeUtilizator;
-        if (Utilizator::utilizatori.find(numeUtilizator) !=
-            Utilizator::utilizatori.end()) //daca exista deja numele de utilizator, alegem altul
+        if (Utilizator::utilizatori.find(numeUtilizator) != Utilizator::utilizatori.end())
+            //daca exista deja numele de utilizator, alegem altul
             do {
                 cout << "Numele de utilizator ales este deja inregistrat. Va rugam sa alegeti altul: ";
                 cin >> numeUtilizator;
             } while (Utilizator::utilizatori.find(numeUtilizator) != Utilizator::utilizatori.end());
-        this->numeCont = numeUtilizator;
-        utilizatorNou.setNumeUtilizator(numeUtilizator);
+        //this->numeCont = numeUtilizator;
+        contNou.setNumeUtilizator(numeUtilizator);
         cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DATE PERSONALE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
         cout << " NUME: ";
         string numeFamilie;
@@ -353,25 +372,26 @@ public:
         cin >> prenume;    //sa imi suprascriu functia de citire cu tot cu mesaje
         string nume;
         nume = numeFamilie + " " + prenume;
-        utilizatorNou.setNume(nume);
+        contNou.setNume(nume);
         cout << "EMAIL: ";
         string email;
         cin >> email;
-        utilizatorNou.setEmail(email);
+        contNou.setEmail(email);
         cout << "PAROLA: ";
         string parola;
         cin >> parola;
-        utilizatorNou.setParola(parola);
+        contNou.setParola(parola);
+        cout << "BUGET: ";
         float buget;
         cin >> buget;
-        utilizatorNou.setBuget(buget);
+        contNou.setBuget(buget);
         cout << "Felicitari! V-ati creat noul cont." << endl;
-
+        Utilizator::utilizatori[contNou.getNumeUtilizator()] = &contNou;
     }
 
     void detaliiCont() {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~ DETALII CONT ~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
-        cout << "NUME UTILIZATOR: " << this->numeCont << endl;
+        cout << "NUME UTILIZATOR: " << Utilizator::utilizatori[this->numeCont]->getNumeUtilizator() << endl;
         cout << "NUME SI PRENUME: " << Utilizator::utilizatori[this->numeCont]->getNume() << endl;
         cout << "EMAIL: " << Utilizator::utilizatori[this->numeCont]->getEmail() << endl;
         cout << "PAROLA: " << Utilizator::utilizatori[this->numeCont]->getParola() << endl;
@@ -380,7 +400,6 @@ public:
     }
 
     static void adaugaProdus(Produs produsNou) {
-        //cin >> produsNou;
         cout << "NUME PRODUS: ";
         string numeProdus;
         cin >> numeProdus;
@@ -411,25 +430,28 @@ public:
         }
         cout << " CATE PRODUSE DORITI SA ACHIZITIONATI? ";
         cin >> comanda.nrProduse;
-        int id;
-        float suma = 0;
-        for (int i = 0; i < comanda.nrProduse; i++) {
-            cout << "INTRODUCETI ID-UL PRODUSULUI PENTRU A IL ADAUGA IN COS: ";
-            cin >> id;
-            comanda.produseComandate.push_back(id);
-            cout << "PRODUS ADAUGAT IN COS!" << endl;
-            suma += Produs::produse[id]->getPret();
+        if (comanda.nrProduse > 0) {
+            int id;
+            float suma = 0;
+            for (int i = 0; i < comanda.nrProduse; i++) {
+                cout << "INTRODUCETI ID-UL PRODUSULUI PENTRU A IL ADAUGA IN COS: ";
+                cin >> id;
+                comanda.produseComandate.push_back(id);
+                cout << "PRODUS ADAUGAT IN COS!" << endl;
+                suma += Produs::produse[id]->getPret();
 
+            }
+            if (Utilizator::utilizatori[numeCont]->getBuget() >= suma) {
+                comanda.pretTotal = suma;
+                for (int i = 0; i <= comanda.produseComandate.size(); i++)
+                    Produs::produse.erase(comanda.produseComandate[i]);
+                cout << "TOTALUL DE PLATA: " << comanda.pretTotal << endl;
+                float bugetCurent = Utilizator::utilizatori[numeCont]->getBuget();
+                bugetCurent -= comanda.pretTotal;
+                Utilizator::utilizatori[numeCont]->setBuget(bugetCurent);
+            } else
+                cout << "FONDURI INSUFICIENTE SARACULE\n";
         }
-        if (Utilizator::utilizatori[numeCont]->getBuget() >= suma) {
-            comanda.pretTotal = suma;
-            for(int i=0; i <= comanda.produseComandate.size(); i++)
-                Produs::produse.erase(comanda.produseComandate[i]);
-            cout << "TOTALUL DE PLATA: " << comanda.pretTotal << endl;
-        }
-        else
-            cout << "FONDURI INSUFICIENTE SARACULE\n";
-
 
 
     }
@@ -470,10 +492,15 @@ int main() {
 
     int input;
     cin >> input;
+
+    Utilizator contNou;
+
     if (input == 1)
         magazin.autentificare();
-    else if (input == 2)
-        magazin.creareCont();
+    else if (input == 2) {
+        Magazin::creareCont(contNou);
+        magazin.setNumeCont(contNou.getNumeUtilizator());
+    }
     do {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MENIU ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
