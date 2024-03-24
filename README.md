@@ -15,3 +15,4 @@ Aceasta este o aplicație de tip magazin online, unde orice utilizator poate ori
 - Dacă nu ai un buget suficient pentru a cumpăra toate produsele pe care le-ai adăugat în coș, comanda nu va putea fi realizată
 - Dacă ai un buget suficient, comanda va fi plasată și ți se va scădea din bugetul personal totalul de plată
 - Poți ieși din aplicație apăsând o tastă anume
+- La comenzile de peste 200 de lei, beneficiați de o reducere de 20%
