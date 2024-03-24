@@ -6,6 +6,9 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <cassert>
+
+#define assertm(exp, msg) assert(((void)msg, exp))
 
 using namespace std;
 
@@ -42,31 +45,23 @@ public:
 
     //setteri
     void setNumeProdus(string const &numeProd) {
-        if (!numeProd.empty()) {
-            this->numeProdus = numeProd;
-        } else
-            cout << "Numele produsului trebuie să aibă minim un caracter" << endl;
+        assertm(!numeProd.empty(), "Numele produsului trebuie sa aiba minim un caracter");
+        this->numeProdus = numeProd;
     }
 
     void setCuloare(string const &culoareP) {
-        if (!culoareP.empty())
-            this->culoare = culoareP;
-        else
-            cout << "Culoarea produsului trebuie să aibă minim un caracter" << endl;
+        assertm(!culoareP.empty(), "Culoarea produsului trebuie sa aiba minim un caracter");
+        this->culoare = culoareP;
     }
 
     void setMarime(string const &marimeP) {
-        if (!marimeP.empty())
-            this->marime = marimeP;
-        else
-            cout << "Produsul trebuie să aibă o mărime disponibilă" << endl;
+        assertm(!marimeP.empty(), "Produsul trebuie sa aiba o marime disponibila");
+        this->marime = marimeP;
     }
 
     void setPret(float const &pretP) {
-        if (pretP >= 0)
-            this->pret = pretP;
-        else
-            cout << "Prețul produsului nu poate fi un număr negativ" << endl;
+        assertm(pretP >= 0, "Pretul produsului trebuie sa fie un numar pozitiv");
+        this->pret = pretP;
     }
 
     //constructor fara parametri
@@ -81,31 +76,20 @@ public:
 
     //constructor cu parametri
     Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret) {
-        if (!numeProdus.empty())
-            this->numeProdus = numeProdus;
-        else
-            cout << "Numele produsului trebuie sa aiba minim un caracter" << endl;
-
-        if (!culoare.empty())
-            this->culoare = culoare;
-        else
-            cout << "Culoarea produsului trebuie sa aiba minim un caracter" << endl;
-
-        if (!marime.empty())
-            this->marime = marime;
-        else
-            cout << "Produsul trebuie sa aiba o marime disponibila" << endl;
-
-        if (pret >= 0)
-            this->pret = pret;
-        else
-            cout << "Pretul produsului trebuie sa fie un numar pozitiv" << endl;
-
+        assertm(!numeProdus.empty(), "Numele produsului trebuie sa aiba minim un caracter");
+        assertm(!culoare.empty(), "Culoarea produsului trebuie sa aiba minim un caracter");
+        assertm(!marime.empty(), "Produsul trebuie sa aiba o marime disponibila");
+        assertm(pret >= 0, "Pretul produsului trebuie sa fie un numar pozitiv");
+        this->numeProdus = numeProdus;
+        this->culoare = culoare;
+        this->marime = marime;
+        this->pret = pret;
         this->id = IDprodus++;
         produse[id] = this;
     }
 
-    /*//constructor de copiere
+    /*
+    //constructor de copiere
     Produs(const Produs &p) {
         this->numeProdus = p.numeProdus;
         this->culoare = p.culoare;
@@ -114,7 +98,6 @@ public:
         this->id = IDprodus++;
         produse[id] = this;
     }
-
     //supraincarcare operator=
     Produs &operator=(const Produs &p) {
         this->numeProdus = p.numeProdus;
@@ -180,38 +163,28 @@ public:
 
     //setteri
     void setNumeUtilizator(string const &nume_utilizator) {
-        if (!nume_utilizator.empty())
-            this->numeUtilizator = nume_utilizator;
-        else
-            cout << "Numele utilizatorului trebuie sa aiba minim un caracter" << endl;
+        assertm(!nume_utilizator.empty(), "Numele utilizatorului trebuie sa aiba minim un caracter");
+        this->numeUtilizator = nume_utilizator;
     }
 
     void setNume(string const &Nume) {
-        if (!Nume.empty())
-            this->nume = Nume;
-        else
-            cout << "Numele trebuie sa aiba minim un caracter" << endl;
+        assertm(!Nume.empty(), "Numele trebuie sa aiba minim un caracter");
+        this->nume = Nume;
     }
 
     void setEmail(string const &Email) {
-        if (!Email.empty())
-            this->email = Email;
-        else
-            cout << "Emailul trebuie sa aiba minim un caracter" << endl;
+        assertm(!Email.empty(), "Emailul trebuie sa aiba minim un caracter");
+        this->email = Email;
     }
 
     void setParola(string const &Parola) {
-        if (!Parola.empty())
-            this->parola = Parola;
-        else
-            cout << "Parola trebuie sa aiba minim un caracter" << endl;
+        assertm(!Parola.empty(), "Parola trebuie sa aiba minim un caracter");
+        this->parola = Parola;
     }
 
     void setBuget(float const &Buget) {
-        if (Buget >= 0)
-            this->buget = Buget;
-        else
-            cout << "Bugetul trebuie sa fie un numar pozitiv!" << endl;
+        assertm(Buget >= 0, "Bugetul trebuie sa fie un numar pozitiv!\n");
+        this->buget = Buget;
     }
 
     //constructor fara parametri
@@ -227,30 +200,16 @@ public:
     //constructor cu parametri
     Utilizator(string const &numeUtilizator, string const &nume, string const &email, string const &parola,
                float const &buget) {
-        if (!numeUtilizator.empty())
-            this->numeUtilizator = numeUtilizator;
-        else
-            cout << "Numele utilizatorului trebuie sa aiba minim un caracter" << endl;
-
-        if (!nume.empty())
-            this->nume = nume;
-        else
-            cout << "Numele trebuie sa aiba minim un caracter" << endl;
-
-        if (!email.empty())
-            this->email = email;
-        else
-            cout << "Emailul trebuie sa aiba minim un caracter" << endl;
-
-        if (!parola.empty())
-            this->parola = parola;
-        else
-            cout << "Parola trebuie sa aiba minim un caracter" << endl;
-
-        if (buget >= 0)
-            this->buget = buget;
-        else
-            cout << "Bugetul trebuie sa fie un numar pozitiv!" << endl;
+        assertm (!numeUtilizator.empty(), "Numele utilizatorului trebuie sa aiba minim un caracter");
+        assertm (!nume.empty(), "Numele trebuie sa aiba minim un caracter");
+        assertm (!email.empty(), "Emailul trebuie sa aiba minim un caracter");
+        assertm (!parola.empty(), "Parola trebuie sa aiba minim un caracter");
+        assertm (buget >= 0, "Bugetul trebuie sa fie un numar pozitiv!");
+        this->numeUtilizator = numeUtilizator;
+        this->nume = nume;
+        this->email = email;
+        this->parola = parola;
+        this->buget = buget;
 
         utilizatori[numeUtilizator] = this;
 
@@ -320,6 +279,13 @@ public:
 
     ~Comanda() = default;
 
+    friend ostream &operator<<(ostream &out, Comanda *c) {
+        out << " Numar de produse: " << c->nrProduse << endl;
+        out << " Numele utilizatorului: " << c->numeUtilizator << endl;
+        out << " Pret total: " << c->pretTotal << endl;
+        return out;
+    }
+
     friend class Magazin;
 
 };
@@ -340,23 +306,24 @@ public:
         cin >> numeIntrodus;
         if (!(Utilizator::utilizatori.find(numeIntrodus) != Utilizator::utilizatori.end())) {
             do {
-                cout << "Nu exista acest nume de utilizator. Va rugam sa incercati din nou: ";
+                cout << " Nu exista acest nume de utilizator. Va rugam sa incercati din nou: ";
                 cin >> numeIntrodus;
+                cout << endl;
             } while (!(Utilizator::utilizatori.find(numeIntrodus) != Utilizator::utilizatori.end()));
         }
         if (Utilizator::utilizatori.find(numeIntrodus) != Utilizator::utilizatori.end()) //exista username-ul
         {
-            cout << "Introduceti parola: ";
+            cout << " Introduceti parola: ";
             string parolaIntrodusa;
             cin >> parolaIntrodusa;
             if (Utilizator::utilizatori[numeIntrodus]->getParola() != parolaIntrodusa)
                 do {
-                    cout << "Parola incorecta. Va rugam reintroduceti parola: ";
+                    cout << " Parola incorecta. Va rugam reintroduceti parola: ";
                     cin >> parolaIntrodusa;
                 } while (Utilizator::utilizatori[numeIntrodus]->getParola() != parolaIntrodusa);
             if (Utilizator::utilizatori[numeIntrodus]->getParola() == parolaIntrodusa) {
                 this->numeCont = numeIntrodus;
-                cout << "V-ati conectat cu succes!\n";
+                cout << " V-ati conectat cu succes!\n";
             }
         }
 
@@ -403,7 +370,7 @@ public:
     }
 
     void detaliiCont() {
-        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~ DETALII CONT ~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
+        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DETALII CONT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << Utilizator::utilizatori[this->numeCont];
 
     }
@@ -432,13 +399,14 @@ public:
     void cumpara() {
         Comanda comanda;
         comanda.numeUtilizator = numeCont;
-        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
+        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         for (const auto &pair: Produs::produse) {
             Produs *ptr = pair.second;
             cout << ptr;
         }
         cout << " CATE PRODUSE DORITI SA ACHIZITIONATI? ";
         cin >> comanda.nrProduse;
+        cout << endl;
         if (comanda.nrProduse > 0) {
             int id;
             float suma = 0;
@@ -472,6 +440,16 @@ public:
 
     ~Magazin() {
         this->numeCont = "";
+    }
+
+    friend ostream &operator<<(ostream &out, Magazin *m) {
+        out << " Numele utilizatorului conectat: " << m->numeCont;
+        out << "\n Produse disponibile: \n";
+        for (const auto &pair: Produs::produse) {
+            Produs *ptr = pair.second;
+            out << ptr;
+        }
+        return out;
     }
 
     friend class Comanda;
