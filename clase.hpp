@@ -304,6 +304,7 @@ public:
         cout << " Intruduceti numele de utilizator: ";
         string numeIntrodus;
         cin >> numeIntrodus;
+        cout << endl;
         if (!(Utilizator::utilizatori.find(numeIntrodus) != Utilizator::utilizatori.end())) {
             do {
                 cout << " Nu exista acest nume de utilizator. Va rugam sa incercati din nou: ";
@@ -316,10 +317,12 @@ public:
             cout << " Introduceti parola: ";
             string parolaIntrodusa;
             cin >> parolaIntrodusa;
+            cout << endl;
             if (Utilizator::utilizatori[numeIntrodus]->getParola() != parolaIntrodusa)
                 do {
                     cout << " Parola incorecta. Va rugam reintroduceti parola: ";
                     cin >> parolaIntrodusa;
+                    cout << endl;
                 } while (Utilizator::utilizatori[numeIntrodus]->getParola() != parolaIntrodusa);
             if (Utilizator::utilizatori[numeIntrodus]->getParola() == parolaIntrodusa) {
                 this->numeCont = numeIntrodus;
@@ -404,6 +407,7 @@ public:
             Produs *ptr = pair.second;
             cout << ptr;
         }
+        cout << "\n ~~~~~~~~LA CUMPARATURILE DE PESTE 200 DE LEI BENEFICIATI DE 20% REDUCERE~~~~~~~~\n\n";
         cout << " CATE PRODUSE DORITI SA ACHIZITIONATI? ";
         cin >> comanda.nrProduse;
         cout << endl;
@@ -418,6 +422,8 @@ public:
                 suma += Produs::produse[id]->getPret();
 
             }
+            if (suma >= 200)
+                suma = float(suma * 0.8);
             if (Utilizator::utilizatori[numeCont]->getBuget() >= suma) {
                 comanda.pretTotal = suma;
                 for (int i = 0; i <= comanda.produseComandate.size(); i++)
