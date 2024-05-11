@@ -13,6 +13,9 @@ int main() {
     Produs p5("bluza", "mov", "XL", 40);
     Produs p6("pantaloni", "albi", "S", 89);
     Produs p7("palarie", "maro", "ONE-SIZE", 34);
+    Haina p8("geaca", "alba", "M", 72, "denim");
+    Produs* p9 = new Haina("tricou", "gri", "XS", 15, "bumbac");
+    MagazinVanzator::puneProdusul(p9);
 
     Utilizator u1("deni", "mihaila denisa", "denisa.mihaila@s.unibuc.ro", "123", 420);
     Utilizator u2("andrei", "popa andrei", "andrei.popa@s.unibuc.ro", "parola", 357);

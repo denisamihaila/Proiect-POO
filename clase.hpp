@@ -18,9 +18,11 @@ private:
     string culoare;
     string marime; //XS, S, M, L, XL
     float pret;
+protected:
     int id; //unic pentru fiecare produs
     static int IDprodus;
-    static map<int, Produs *> produse; //key = id
+    static map<int, Produs *> produse; //key = id produs
+    virtual void updateMarime() { cout << "Modificam marimea produsului cu id-ul " << id << endl;};
 public:
     //getteri
     string getNumeProdus() const {
@@ -75,7 +77,7 @@ public:
     }
 
     //constructor cu parametri
-    Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret) {
+    /*Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret) {
         assertm(!numeProdus.empty(), "Numele produsului trebuie sa aiba minim un caracter");
         assertm(!culoare.empty(), "Culoarea produsului trebuie sa aiba minim un caracter");
         assertm(!marime.empty(), "Produsul trebuie sa aiba o marime disponibila");
@@ -85,6 +87,11 @@ public:
         this->marime = marime;
         this->pret = pret;
         this->id = IDprodus++;
+        produse[id] = this;
+    }*/
+
+    Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret) :
+        numeProdus(numeProdus), culoare(culoare), marime(marime), pret(pret), id(IDprodus++) {
         produse[id] = this;
     }
 
@@ -110,7 +117,7 @@ public:
     }*/
 
     //destructor
-    ~Produs() = default;
+    virtual ~Produs() = default;
 
     friend istream &operator>>(istream &in, Produs &p) {
         in >> p.numeProdus >> p.culoare >> p.marime >> p.pret;
@@ -129,12 +136,25 @@ public:
     friend class MagazinClient;
 };
 
-class Haina : public Produs{
-
-};
-
-class Accesoriu : public Produs {
-
+class Haina : virtual public Produs{
+private:
+    string material;
+public:
+    Haina(string const &numeProdus, string const &culoare, string const &marime, float const &pret, string const &material) :
+    Produs(numeProdus, culoare, marime, pret), material(material) {
+        produse[id] = this;
+    }
+    string getMaterial() {return material;}
+    friend ostream &operator<<(ostream &out, Haina *p) {
+        out << " ID:" << p->getID() << ". " << p->getNumeProdus() << " " << p->getMaterial() << " " << p->getCuloare() << " " << p->getMarime()
+            << " " << p->getPret() << " lei " << endl;
+        return out;
+    }
+    void updateMarime() {
+        string nouaMarime;
+        cin >> nouaMarime;
+        this->setMarime(nouaMarime);
+    };
 };
 
 int Produs::IDprodus = 1;
@@ -431,6 +451,13 @@ public:
 
 class MagazinClient : virtual public Magazin {
 public:
+    MagazinClient() {
+        this->numeCont = "-";
+    }
+
+    ~MagazinClient() {
+        this->numeCont = "";
+    }
     void cumpara() {
         Comanda comanda;
         comanda.numeUtilizator = numeCont;
@@ -475,6 +502,13 @@ public:
 
 class MagazinVanzator : public Magazin{
 public:
+    MagazinVanzator() {
+        this->numeCont = "-";
+    }
+
+    ~MagazinVanzator() {
+        this->numeCont = "";
+    }
     void cumpara() override { cout << endl << "Vanzatorul nu poate cumpara produse";}
     static void adaugaProdus(Produs *produsNou) {
         cout << "NUME PRODUS: ";
@@ -494,6 +528,9 @@ public:
         cin >> pretProdus;
         produsNou->setPret(pretProdus);
         cout << "PRODUS ADAUGAT!\n";
+        Produs::produse[produsNou->getID()] = produsNou;
+    }
+    static void puneProdusul(Produs *produsNou){
         Produs::produse[produsNou->getID()] = produsNou;
     }
 };
