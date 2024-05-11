@@ -88,7 +88,6 @@ public:
         produse[id] = this;
     }
 
-    /*
     //constructor de copiere
     Produs(const Produs &p) {
         this->numeProdus = p.numeProdus;
@@ -96,9 +95,9 @@ public:
         this->marime = p.marime;
         this->pret = p.pret;
         this->id = IDprodus++;
-        produse[id] = this;
+        produse[this->id] = this;
     }
-
+/*
     //supraincarcare operator=
     Produs &operator=(const Produs &p) {
         this->numeProdus = p.numeProdus;
@@ -106,7 +105,7 @@ public:
         this->marime = p.marime;
         this->pret = p.pret;
         this->id = IDprodus++;
-        produse[id] = this;
+        produse[this->id] = this;
         return *this;
     }*/
 
@@ -125,8 +124,17 @@ public:
     }
 
     friend class Magazin;
-
     friend class Comanda;
+    friend class MagazinVanzator;
+    friend class MagazinClient;
+};
+
+class Haina : public Produs{
+
+};
+
+class Accesoriu : public Produs {
+
 };
 
 int Produs::IDprodus = 1;
@@ -257,8 +265,9 @@ public:
     }
 
     friend class Magazin;
-
-    //friend class Comanda;
+    friend class LogIn;
+    friend class MagazinVanzator;
+    friend class MagazinClient;
 
 };
 
@@ -288,18 +297,15 @@ public:
     }
 
     friend class Magazin;
+    friend class MagazinVanzator;
+    friend class MagazinClient;
 
 };
 
-class Magazin {
+class LogIn {
 private:
     string numeCont;
 public:
-    //setter
-    void setNumeCont(string const &numecont) {
-        this->numeCont = numecont;
-    }
-
     void autentificare() {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ AUTENTIFICARE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << " Intruduceti numele de utilizator: ";
@@ -326,14 +332,14 @@ public:
                     cout << endl;
                 } while (Utilizator::utilizatori[numeIntrodus]->getParola() != parolaIntrodusa);
             if (Utilizator::utilizatori[numeIntrodus]->getParola() == parolaIntrodusa) {
-                this->numeCont = numeIntrodus;
+                //this->numeCont = numeIntrodus;
                 cout << " V-ati conectat cu succes!\n";
             }
         }
-
+        numeCont = numeIntrodus;
     }
 
-    static void creareCont(Utilizator contNou) {
+    void creareCont(Utilizator contNou) {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CREARE CONT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << " Intruduceti un nume de utilizator: ";
         string numeUtilizator;
@@ -345,7 +351,6 @@ public:
                 cin >> numeUtilizator;
                 cout << endl;
             } while (Utilizator::utilizatori.find(numeUtilizator) != Utilizator::utilizatori.end());
-        //this->numeCont = numeUtilizator;
         contNou.setNumeUtilizator(numeUtilizator);
         cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DATE PERSONALE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" << endl;
         cout << " NUME: ";
@@ -371,35 +376,61 @@ public:
         contNou.setBuget(buget);
         cout << "Felicitari! V-ati creat noul cont." << endl;
         Utilizator::utilizatori[contNou.getNumeUtilizator()] = &contNou;
+        numeCont = numeUtilizator;
+    }
+    //getter nume cont
+    string getNumeCont() {
+        return numeCont;
+    }
+};
+
+class Magazin {
+protected:
+    string numeCont;
+public:
+    virtual void cumpara() = 0;
+    //setter
+    void setNumeCont(string const &numecont) {
+        this->numeCont = numecont;
+    }
+
+    void afisareCatalog() {
+        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
+        for (const auto &pair: Produs::produse) {
+            Produs *ptr = pair.second;
+            cout << ptr;
+        }
     }
 
     void detaliiCont() {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DETALII CONT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << Utilizator::utilizatori[this->numeCont];
-
     }
 
-    static void adaugaProdus(Produs *produsNou) {
-        cout << "NUME PRODUS: ";
-        string numeProdus;
-        cin >> numeProdus;
-        produsNou->setNumeProdus(numeProdus);
-        cout << "CULOARE: ";
-        string culoareProdus;
-        cin >> culoareProdus;
-        produsNou->setCuloare(culoareProdus);
-        cout << "MARIME: ";
-        string marimeProdus;
-        cin >> marimeProdus;
-        produsNou->setMarime(marimeProdus);
-        cout << "PRET: ";
-        float pretProdus;
-        cin >> pretProdus;
-        produsNou->setPret(pretProdus);
-        cout << "PRODUS ADAUGAT!\n";
-        Produs::produse[produsNou->getID()] = produsNou;
+    //constructor fara parametri
+    Magazin() {
+        this->numeCont = "-";
     }
 
+    virtual ~Magazin() {
+        this->numeCont = "";
+    }
+
+    friend ostream &operator<<(ostream &out, Magazin *m) {
+        out << " Numele utilizatorului conectat: " << m->numeCont;
+        out << "\n Produse disponibile: \n";
+        for (const auto &pair: Produs::produse) {
+            Produs *ptr = pair.second;
+            out << ptr;
+        }
+        return out;
+    }
+
+    friend class Comanda;
+};
+
+class MagazinClient : virtual public Magazin {
+public:
     void cumpara() {
         Comanda comanda;
         comanda.numeUtilizator = numeCont;
@@ -440,27 +471,31 @@ public:
 
     }
 
-    //constructor fara parametri
-    Magazin() {
-        this->numeCont = "-";
-    }
-
-    ~Magazin() {
-        this->numeCont = "";
-    }
-
-    friend ostream &operator<<(ostream &out, Magazin *m) {
-        out << " Numele utilizatorului conectat: " << m->numeCont;
-        out << "\n Produse disponibile: \n";
-        for (const auto &pair: Produs::produse) {
-            Produs *ptr = pair.second;
-            out << ptr;
-        }
-        return out;
-    }
-
-    friend class Comanda;
 };
 
+class MagazinVanzator : public Magazin{
+public:
+    void cumpara() override { cout << endl << "Vanzatorul nu poate cumpara produse";}
+    static void adaugaProdus(Produs *produsNou) {
+        cout << "NUME PRODUS: ";
+        string numeProdus;
+        cin >> numeProdus;
+        produsNou->setNumeProdus(numeProdus);
+        cout << "CULOARE: ";
+        string culoareProdus;
+        cin >> culoareProdus;
+        produsNou->setCuloare(culoareProdus);
+        cout << "MARIME: ";
+        string marimeProdus;
+        cin >> marimeProdus;
+        produsNou->setMarime(marimeProdus);
+        cout << "PRET: ";
+        float pretProdus;
+        cin >> pretProdus;
+        produsNou->setPret(pretProdus);
+        cout << "PRODUS ADAUGAT!\n";
+        Produs::produse[produsNou->getID()] = produsNou;
+    }
+};
 
 #endif
