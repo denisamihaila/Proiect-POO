@@ -1,4 +1,5 @@
 #include <iostream>
+#include <list>
 #include "clase.hpp"
 
 using namespace std;
@@ -35,6 +36,7 @@ int main() {
 
     Utilizator contNou;
 
+    list<Produs*> produse; // retinem pointerii de produse intr-o lista pentru a-i sterge ulterior
     if (input == 1)
         magazin.autentificare();
     else if (input == 2) {
@@ -56,11 +58,18 @@ int main() {
         if (input == 1)
             magazin.detaliiCont();
         else if (input == 2) {
-            Produs p_nou;
-            Magazin::adaugaProdus(p_nou);
+            Produs *p_nou = new Produs; // alocare dinamica pentru fiecare produs,
+            produse.push_back(p_nou); // inseram pointerul in lista
+            Magazin::adaugaProdus(p_nou); // apelam metoda
         } else if (input == 3)
             magazin.cumpara();
         else if (input == 4) break;
     } while (input != 4);
+
+    // eliberam memoria pentru produsele create dinamic
+    for (Produs *produs : produse) {
+        if (produs != NULL)
+            delete produs;
+    }
     return 0;
 }

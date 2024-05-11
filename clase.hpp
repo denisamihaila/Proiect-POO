@@ -98,6 +98,7 @@ public:
         this->id = IDprodus++;
         produse[id] = this;
     }
+
     //supraincarcare operator=
     Produs &operator=(const Produs &p) {
         this->numeProdus = p.numeProdus;
@@ -257,7 +258,7 @@ public:
 
     friend class Magazin;
 
-    friend class Comanda;
+    //friend class Comanda;
 
 };
 
@@ -378,25 +379,25 @@ public:
 
     }
 
-    static void adaugaProdus(Produs produsNou) {
+    static void adaugaProdus(Produs *produsNou) {
         cout << "NUME PRODUS: ";
         string numeProdus;
         cin >> numeProdus;
-        produsNou.setNumeProdus(numeProdus);
+        produsNou->setNumeProdus(numeProdus);
         cout << "CULOARE: ";
         string culoareProdus;
         cin >> culoareProdus;
-        produsNou.setCuloare(culoareProdus);
+        produsNou->setCuloare(culoareProdus);
         cout << "MARIME: ";
         string marimeProdus;
         cin >> marimeProdus;
-        produsNou.setMarime(marimeProdus);
+        produsNou->setMarime(marimeProdus);
         cout << "PRET: ";
         float pretProdus;
         cin >> pretProdus;
-        produsNou.setPret(pretProdus);
+        produsNou->setPret(pretProdus);
         cout << "PRODUS ADAUGAT!\n";
-        Produs::produse[produsNou.getID()] = &produsNou;
+        Produs::produse[produsNou->getID()] = produsNou;
     }
 
     void cumpara() {
@@ -434,7 +435,7 @@ public:
                 bugetCurent -= comanda.pretTotal;
                 Utilizator::utilizatori[numeCont]->setBuget(bugetCurent);
             } else
-                cout << "FONDURI INSUFICIENTE :((( \n";
+                cout << "\n FONDURI INSUFICIENTE. COMANDA NU A PUTUT FI PLASATA :( \n";
         }
 
     }
@@ -463,4 +464,3 @@ public:
 
 
 #endif
-
