@@ -6,11 +6,19 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <cassert>
-
-#define assertm(exp, msg) assert(((void)msg, exp))
 
 using namespace std;
+
+class Exceptie : public exception{
+private:
+    string mesaj;
+public:
+    explicit Exceptie(const string& message) : mesaj(message) {}
+
+    const char* what() const noexcept override{
+        return mesaj.c_str();
+    }
+};
 
 class Produs {
 private:
@@ -22,6 +30,7 @@ protected:
     int id; //unic pentru fiecare produs
     static int IDprodus;
     static map<int, Produs *> produse; //key = id produs
+    //polimorfism
     virtual void updateMarime() { cout << "Modificam marimea produsului cu id-ul " << id << endl;};
 public:
     //getteri
@@ -47,22 +56,26 @@ public:
 
     //setteri
     void setNumeProdus(string const &numeProd) {
-        assertm(!numeProd.empty(), "Numele produsului trebuie sa aiba minim un caracter");
+        if(numeProd.empty())
+            throw Exceptie("Numele produsului trebuie sa aiba minim un caracter");
         this->numeProdus = numeProd;
     }
 
     void setCuloare(string const &culoareP) {
-        assertm(!culoareP.empty(), "Culoarea produsului trebuie sa aiba minim un caracter");
+        if(culoareP.empty())
+            throw Exceptie("Culoarea produsului trebuie sa aiba minim un caracter");
         this->culoare = culoareP;
     }
 
     void setMarime(string const &marimeP) {
-        assertm(!marimeP.empty(), "Produsul trebuie sa aiba o marime disponibila");
+        if(marimeP.empty())
+            throw Exceptie("Produsul trebuie sa aiba o marime disponibila");
         this->marime = marimeP;
     }
 
     void setPret(float const &pretP) {
-        assertm(pretP >= 0, "Pretul produsului trebuie sa fie un numar pozitiv");
+        if(pretP < 0)
+            throw Exceptie("Pretul produsului trebuie sa fie un numar pozitiv");
         this->pret = pretP;
     }
 
@@ -90,9 +103,24 @@ public:
         produse[id] = this;
     }*/
 
+    /*
     Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret) :
         numeProdus(numeProdus), culoare(culoare), marime(marime), pret(pret), id(IDprodus++) {
         produse[id] = this;
+    }
+    */
+
+    Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret){
+        try {
+            setNumeProdus(numeProdus);
+            setCuloare(culoare);
+            setMarime(marime);
+            setPret(pret);
+            this->id = IDprodus++;
+            produse[id] = this;
+        } catch (const Exceptie& e) {
+            cerr << "Nu s-a putut crea produsul: " << e.what() << endl;
+        }
     }
 
     //constructor de copiere
@@ -104,7 +132,7 @@ public:
         this->id = IDprodus++;
         produse[this->id] = this;
     }
-/*
+    /*
     //supraincarcare operator=
     Produs &operator=(const Produs &p) {
         this->numeProdus = p.numeProdus;
@@ -150,10 +178,17 @@ public:
             << " " << p->getPret() << " lei " << endl;
         return out;
     }
-    void updateMarime() {
+    //polimorfism runtime(dinamic)
+    void updateMarime() override {
         string nouaMarime;
         cin >> nouaMarime;
         this->setMarime(nouaMarime);
+    };
+    //polimorfism compile-time(static)
+    void updateMarime(Haina* haina) {
+        string nouaMarime;
+        cin >> nouaMarime;
+        haina->setMarime(nouaMarime);
     };
 };
 
@@ -192,27 +227,32 @@ public:
 
     //setteri
     void setNumeUtilizator(string const &nume_utilizator) {
-        assertm(!nume_utilizator.empty(), "Numele utilizatorului trebuie sa aiba minim un caracter");
+        if(nume_utilizator.empty())
+            throw Exceptie("Numele utilizatorului trebuie sa aiba minim un caracter");
         this->numeUtilizator = nume_utilizator;
     }
 
     void setNume(string const &Nume) {
-        assertm(!Nume.empty(), "Numele trebuie sa aiba minim un caracter");
+        if(Nume.empty())
+            throw Exceptie("Numele trebuie sa aiba minim un caracter");
         this->nume = Nume;
     }
 
     void setEmail(string const &Email) {
-        assertm(!Email.empty(), "Emailul trebuie sa aiba minim un caracter");
+        if(Email.empty())
+            throw Exceptie("Emailul trebuie sa aiba minim un caracter");
         this->email = Email;
     }
 
     void setParola(string const &Parola) {
-        assertm(!Parola.empty(), "Parola trebuie sa aiba minim un caracter");
+        if(Parola.empty())
+            throw Exceptie("Parola trebuie sa aiba minim un caracter");
         this->parola = Parola;
     }
 
     void setBuget(float const &Buget) {
-        assertm(Buget >= 0, "Bugetul trebuie sa fie un numar pozitiv!\n");
+        if(Buget < 0)
+            throw Exceptie("Bugetul trebuie sa fie un numar pozitiv!\n");
         this->buget = Buget;
     }
 
@@ -229,11 +269,16 @@ public:
     //constructor cu parametri
     Utilizator(string const &numeUtilizator, string const &nume, string const &email, string const &parola,
                float const &buget) {
-        assertm (!numeUtilizator.empty(), "Numele utilizatorului trebuie sa aiba minim un caracter");
-        assertm (!nume.empty(), "Numele trebuie sa aiba minim un caracter");
-        assertm (!email.empty(), "Emailul trebuie sa aiba minim un caracter");
-        assertm (!parola.empty(), "Parola trebuie sa aiba minim un caracter");
-        assertm (buget >= 0, "Bugetul trebuie sa fie un numar pozitiv!");
+        if(numeUtilizator.empty())
+            throw Exceptie("Numele utilizatorului trebuie sa aiba minim un caracter");
+        if(nume.empty())
+            throw Exceptie("Numele trebuie sa aiba minim un caracter");
+        if(email.empty())
+            throw Exceptie("Emailul trebuie sa aiba minim un caracter");
+        if(parola.empty())
+            throw Exceptie("Parola trebuie sa aiba minim un caracter");
+        if(buget < 0)
+            throw Exceptie("Bugetul trebuie sa fie un numar pozitiv!");
         this->numeUtilizator = numeUtilizator;
         this->nume = nume;
         this->email = email;
@@ -408,13 +453,14 @@ class Magazin {
 protected:
     string numeCont;
 public:
+    //polimorfism runtime(dinamic)
     virtual void cumpara() = 0;
     //setter
     void setNumeCont(string const &numecont) {
         this->numeCont = numecont;
     }
 
-    void afisareCatalog() {
+    static void afisareCatalog() {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         for (const auto &pair: Produs::produse) {
             Produs *ptr = pair.second;
@@ -455,10 +501,11 @@ public:
         this->numeCont = "-";
     }
 
-    ~MagazinClient() {
+    ~MagazinClient() override {
         this->numeCont = "";
     }
-    void cumpara() {
+    //polimorfism runtime(dinamic)
+    void cumpara() override {
         Comanda comanda;
         comanda.numeUtilizator = numeCont;
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
@@ -506,12 +553,14 @@ public:
         this->numeCont = "-";
     }
 
-    ~MagazinVanzator() {
+    ~MagazinVanzator() override {
         this->numeCont = "";
     }
+    //polimorfism runtime(dinamic)
     void cumpara() override { cout << endl << "Vanzatorul nu poate cumpara produse";}
     static void adaugaProdus(Produs *produsNou) {
-        cout << "NUME PRODUS: ";
+        try
+        {cout << "NUME PRODUS: ";
         string numeProdus;
         cin >> numeProdus;
         produsNou->setNumeProdus(numeProdus);
@@ -527,8 +576,11 @@ public:
         float pretProdus;
         cin >> pretProdus;
         produsNou->setPret(pretProdus);
-        cout << "PRODUS ADAUGAT!\n";
         Produs::produse[produsNou->getID()] = produsNou;
+        cout << "PRODUS ADAUGAT!\n";}
+        catch (const Exceptie& e) {
+            cerr << "Nu s-a putut adauga produsul: " << e.what() << endl;
+        }
     }
     static void puneProdusul(Produs *produsNou){
         Produs::produse[produsNou->getID()] = produsNou;
