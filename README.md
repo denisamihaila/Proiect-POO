@@ -28,6 +28,7 @@ Logica principală este conținută în fișierul `main.cpp`, care creează inst
 - `Utilizator`: Gestionează datele utilizatorului cum ar fi numele de utilizator, informațiile personale, email-ul, parola și bugetul.
 - `LogIn`: Se ocupă de procesele de logare și creare a conturilor utilizatorilor.
 - `Magazin`, `MagazinClient`, `MagazinVanzator`: Clase abstracte și derivate ce încapsulează funcționalitățile diferite ale magazinului în funcție de tipul de utilizator (client sau vânzător).
+- `MagazinAdmin`: Alcătuiește moștenirea în diamant, alături de cele 3 clase de mai sus. Vine cu o funcționalitate în plus - cea de a șterge produse. De asemenea, funcția cumpără() avea două implementări diferite în cele 2 clase pe care le moștenește direct, așa că a fost nevoie să se menționeze care implementare să fie apelată.
 
 ### Curățarea Memoriei
 Aplicația alocă dinamic memorie pentru produse și utilizează pointeri inteligenți pentru eliberarea automată la terminarea executării, asigurând astfel absența scurgerilor de memorie.

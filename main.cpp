@@ -90,7 +90,7 @@ int main() {
             else if (input == 3)
             {
                 if(tip == 1) magazin->cumpara();
-                else { magazin->afisareCatalog();
+                else { Magazin::afisareCatalog();
                     cout << endl << "Nu aveti permisiunea de a cumpara produse";}
             }
             else if (input == 4) break;

@@ -162,6 +162,7 @@ public:
     friend class Comanda;
     friend class MagazinVanzator;
     friend class MagazinClient;
+    friend class MagazinAdmin;
 };
 
 class Haina : virtual public Produs{
@@ -547,7 +548,7 @@ public:
 
 };
 
-class MagazinVanzator : public Magazin{
+class MagazinVanzator : virtual public Magazin{
 public:
     MagazinVanzator() {
         this->numeCont = "-";
@@ -587,4 +588,19 @@ public:
     }
 };
 
+class MagazinAdmin : virtual public MagazinVanzator, virtual public MagazinClient {
+public:
+    void cumpara() override {
+        MagazinClient::cumpara();
+    }
+    MagazinAdmin() {
+        this->numeCont = "-";
+    }
+    ~MagazinAdmin() override {
+        this->numeCont = "";
+    }
+    void stergeProdus(int id) {
+        Produs::produse.erase(id);
+    };
+};
 #endif
