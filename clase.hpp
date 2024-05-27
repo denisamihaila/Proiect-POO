@@ -163,6 +163,7 @@ public:
     friend class MagazinVanzator;
     friend class MagazinClient;
     friend class MagazinAdmin;
+
 };
 
 class Haina : virtual public Produs{
@@ -179,13 +180,13 @@ public:
             << " " << p->getPret() << " lei " << endl;
         return out;
     }
-    //polimorfism runtime(dinamic)
+    //polimorfism runtime(dinamic) - functie virtuala
     void updateMarime() override {
         string nouaMarime;
         cin >> nouaMarime;
         this->setMarime(nouaMarime);
     };
-    //polimorfism compile-time(static)
+    //polimorfism compile-time(static) - supraincarcarea functiilor
     void updateMarime(Haina* haina) {
         string nouaMarime;
         cin >> nouaMarime;
@@ -195,6 +196,21 @@ public:
 
 int Produs::IDprodus = 1;
 map<int, Produs *> Produs::produse;
+
+//Factory Method Pattern
+class ProdusFactory {
+public:
+    virtual Produs* createProdus(string const &numeProdus, string const &culoare, string const &marime, float const &pret) = 0;
+    virtual ~ProdusFactory() = default;
+};
+
+class HainaFactory : public ProdusFactory {
+public:
+    Produs* createProdus(string const &numeProdus, string const &culoare, string const &marime, float const &pret) override {
+        return new Haina(numeProdus, culoare, marime, pret, "material implicit");
+    }
+};
+
 
 class Utilizator {
     string numeUtilizator;
@@ -339,26 +355,70 @@ public:
 
 map<string, Utilizator *> Utilizator::utilizatori;
 
+//Strategy Pattern
+class PretStrategy {
+public:
+    virtual float calculeazaPretFinal(float pret) = 0;
+    virtual ~PretStrategy() = default;
+};
+
+class PretStandardStrategy : public PretStrategy {
+public:
+    float calculeazaPretFinal(float pret) override {
+        return pret;
+    }
+};
+
+class PretReducereStrategy : public PretStrategy {
+public:
+    float calculeazaPretFinal(float pret) override {
+        return pret >= 200 ? pret * 0.8f : pret;
+    }
+};
+
 class Comanda {
 private:
     int nrProduse;
     string numeUtilizator;
     float pretTotal;
     vector<int> produseComandate; //id-urile produselor comandate
+    PretStrategy* strategy;
 public:
-    Comanda() {
-        this->nrProduse = 0;
-        this->numeUtilizator = "-";
-        this->pretTotal = 0;
+
+    Comanda() : nrProduse(0), numeUtilizator("-"), pretTotal(0), strategy(new PretStandardStrategy()) {
         this->produseComandate = {};
     }
 
-    ~Comanda() = default;
+    ~Comanda() {
+        delete strategy;
+    }
+
+    void setStrategy(PretStrategy* s) {
+        if (strategy) {
+            delete strategy;
+        }
+        strategy = s;
+    }
+
+    float getPretTotal() {
+        if (strategy) {
+            return strategy->calculeazaPretFinal(pretTotal);
+        } else {
+            throw logic_error("Strategia de preț nu a fost setată.");
+        }
+    }
+
+    void adaugaProdusInComanda(Produs* produs) {
+        if(produs) {
+            produseComandate.push_back(produs->getID());
+            pretTotal += produs->getPret();
+        }
+    }
 
     friend ostream &operator<<(ostream &out, Comanda *c) {
         out << " Numar de produse: " << c->nrProduse << endl;
         out << " Numele utilizatorului: " << c->numeUtilizator << endl;
-        out << " Pret total: " << c->pretTotal << endl;
+        out << " Pret total: " << c->getPretTotal() << endl;
         return out;
     }
 
@@ -368,10 +428,19 @@ public:
 
 };
 
+//Singleton Pattern
 class LogIn {
 private:
+    static LogIn* instance;
     string numeCont;
+    LogIn() {}
 public:
+    static LogIn* getInstance() {
+        if (instance == nullptr) {
+            instance = new LogIn();
+        }
+        return instance;
+    }
     void autentificare() {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ AUTENTIFICARE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << " Intruduceti numele de utilizator: ";
@@ -450,6 +519,8 @@ public:
     }
 };
 
+LogIn* LogIn::instance = nullptr;
+
 class Magazin {
 protected:
     string numeCont;
@@ -520,28 +591,35 @@ public:
         cout << endl;
         if (comanda.nrProduse > 0) {
             int id;
-            float suma = 0;
             for (int i = 0; i < comanda.nrProduse; i++) {
                 cout << " INTRODUCETI ID-UL PRODUSULUI PENTRU A IL ADAUGA IN COS: ";
                 cin >> id;
-                comanda.produseComandate.push_back(id);
-                cout << "PRODUS ADAUGAT IN COS!" << endl;
-                suma += Produs::produse[id]->getPret();
+                if(Produs::produse.find(id) != Produs::produse.end()) {
+                    comanda.adaugaProdusInComanda(Produs::produse[id]);
+                    cout << "PRODUS ADAUGAT IN COS!" << endl;
+                } else {
+                    cout << "ID INVALID! PRODUSUL NU EXISTA." << endl;
+                }
 
             }
-            if (suma >= 200)
-                suma = float(suma * 0.8);
+            if (comanda.pretTotal >= 200) {
+                comanda.setStrategy(new PretReducereStrategy());
+            } else {
+                comanda.setStrategy(new PretStandardStrategy());
+            }
+            float suma = comanda.getPretTotal();
             if (Utilizator::utilizatori[numeCont]->getBuget() >= suma) {
-                comanda.pretTotal = suma;
-                for (int i = 0; i <= comanda.produseComandate.size(); i++)
-                    Produs::produse.erase(comanda.produseComandate[i]);
-                cout << "\n TOTALUL DE PLATA: " << comanda.pretTotal << endl;
+                for (int idProdus : comanda.produseComandate) {
+                    Produs::produse.erase(idProdus);
+                }
+                cout << "\n TOTALUL DE PLATA: " << suma << endl;
                 cout << " Comanda a fost efectuata." << endl;
                 float bugetCurent = Utilizator::utilizatori[numeCont]->getBuget();
-                bugetCurent -= comanda.pretTotal;
+                bugetCurent -= suma;
                 Utilizator::utilizatori[numeCont]->setBuget(bugetCurent);
-            } else
+            } else {
                 cout << "\n FONDURI INSUFICIENTE. COMANDA NU A PUTUT FI PLASATA :( \n";
+            }
         }
 
     }

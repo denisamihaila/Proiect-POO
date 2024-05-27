@@ -15,6 +15,10 @@ int main() {
     Produs p6("pantaloni", "albi", "S", 89);
     Produs p7("palarie", "maro", "ONE-SIZE", 34);
     Haina p8("geaca", "alba", "M", 72, "denim");
+
+    ProdusFactory* hainaFactory = new HainaFactory();
+    Produs* haina = hainaFactory->createProdus("pulover", "mov", "L", 80);
+
     //upcasting
     Produs* p9 = new Haina("tricou", "gri", "XS", 15, "bumbac");
     produse.push_back(p9); // inseram pointerul in lista
@@ -43,7 +47,7 @@ int main() {
         magazin = new MagazinVanzator();
 
     if(magazin != nullptr) {
-        LogIn login;
+        LogIn* login = LogIn::getInstance();
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~ INREGISTRARE UTILIZATOR ~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << " --> Apasati tasta 1, urmata de Enter, daca aveti deja cont " << endl;
         cout << " --> Apasati tasta 2, urmata de Enter, pentru a va crea contul de utilizator " << endl;
@@ -55,10 +59,10 @@ int main() {
         Utilizator contNou;
 
         if (input == 1) {
-            login.autentificare();
-            magazin->setNumeCont(login.getNumeCont());
+            login->autentificare();
+            magazin->setNumeCont(login->getNumeCont());
         } else if (input == 2) {
-            login.creareCont(contNou);
+            login->creareCont(contNou);
             magazin->setNumeCont(contNou.getNumeUtilizator());
         }
         do {
@@ -103,5 +107,6 @@ int main() {
         }
         delete magazin;
     }
+    delete hainaFactory;
     return 0;
 }
