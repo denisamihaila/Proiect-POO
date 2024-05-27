@@ -6,7 +6,7 @@ using namespace std;
 
 int main() {
 
-    list<Produs *> produse; // retinem pointerii de produse intr-o lista pentru a-i sterge ulterior
+    Catalog<Produs*> catalog;
     Produs p1("rochie", "neagra", "XS", 79);
     Produs p2("blugi", "albastri", "L", 120);
     Produs p3("bluza", "rosie", "M", 47);
@@ -16,13 +16,22 @@ int main() {
     Produs p7("palarie", "maro", "ONE-SIZE", 34);
     Haina p8("geaca", "alba", "M", 72, "denim");
 
+    catalog.adaugaProdus(&p1);
+    catalog.adaugaProdus(&p2);
+    catalog.adaugaProdus(&p3);
+    catalog.adaugaProdus(&p4);
+    catalog.adaugaProdus(&p5);
+    catalog.adaugaProdus(&p6);
+    catalog.adaugaProdus(&p7);
+    catalog.adaugaProdus(&p8);
+
     ProdusFactory* hainaFactory = new HainaFactory();
     Produs* haina = hainaFactory->createProdus("pulover", "mov", "L", 80);
+    catalog.adaugaProdus(haina);
 
     //upcasting
-    Produs* p9 = new Haina("tricou", "gri", "XS", 15, "bumbac");
-    produse.push_back(p9); // inseram pointerul in lista
-    MagazinVanzator::puneProdusul(p9); // apelam metoda
+    Produs* p10 = new Haina("tricou", "gri", "XS", 15, "bumbac");
+    catalog.adaugaProdus(p10);
 
     Utilizator u1("deni", "mihaila denisa", "denisa.mihaila@s.unibuc.ro", "123", 420);
     Utilizator u2("andrei", "popa andrei", "andrei.popa@s.unibuc.ro", "parola", 357);
@@ -47,6 +56,10 @@ int main() {
         magazin = new MagazinVanzator();
 
     if(magazin != nullptr) {
+        for (Produs* produs : catalog.getProduse()) {
+            magazin->adaugaProdus(produs);
+        }
+
         LogIn* login = LogIn::getInstance();
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~ INREGISTRARE UTILIZATOR ~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << " --> Apasati tasta 1, urmata de Enter, daca aveti deja cont " << endl;
@@ -87,22 +100,20 @@ int main() {
             {
                 if(tip == 1) cout << "Nu aveti permisiunea sa adaugati produse";
                 else if(tip == 2)
-                {auto *p_nou = new Produs; // alocare dinamica pentru fiecare produs,
-                produse.push_back(p_nou); // inseram pointerul in lista
-                MagazinVanzator::adaugaProdus(p_nou);} // apelam metoda
+                {auto *p_nou = new Produs;
+                magazin->adaugaProdus(p_nou);}
             }
             else if (input == 3)
             {
                 if(tip == 1) magazin->cumpara();
-                else { Magazin::afisareCatalog();
+                else { magazin->afisareCatalog();
                     cout << endl << "Nu aveti permisiunea de a cumpara produse";}
             }
             else if (input == 4) break;
 
         } while (input != 4);
 
-        // eliberam memoria pentru produsele create dinamic
-        for (Produs *produs: produse) {
+        for (Produs *produs: catalog.getProduse()) {
             delete produs;
         }
         delete magazin;

@@ -6,6 +6,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -521,9 +522,45 @@ public:
 
 LogIn* LogIn::instance = nullptr;
 
+template<typename T>
+class Catalog {
+private:
+    vector<T> produse;
+public:
+    void adaugaProdus(const T& produs) {
+        produse.push_back(produs);
+    }
+
+    void stergeProdus(int id) {
+        produse.erase(remove_if(produse.begin(), produse.end(),
+                                     [id](const T& produs) { return produs->getID() == id; }), produse.end());
+    }
+
+    void afisareCatalog() const {
+        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << std::endl;
+        for (const auto& produs : produse) {
+            cout << produs;
+        }
+    }
+
+    T cautaProdus(int id) {
+        auto it = find_if(produse.begin(), produse.end(),
+                          [id](const T& produs) { return produs->getID() == id; });
+        if (it != produse.end()) {
+            return *it; // Return the actual pointer stored in the vector
+        }
+        return nullptr;
+    }
+
+    const vector<T>& getProduse() const {
+        return produse;
+    }
+};
+
 class Magazin {
 protected:
     string numeCont;
+    Catalog<Produs*> catalog;
 public:
     //polimorfism runtime(dinamic)
     virtual void cumpara() = 0;
@@ -532,17 +569,29 @@ public:
         this->numeCont = numecont;
     }
 
-    static void afisareCatalog() {
-        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
-        for (const auto &pair: Produs::produse) {
-            Produs *ptr = pair.second;
-            cout << ptr;
-        }
+    void afisareCatalog() const {
+        catalog.afisareCatalog();
     }
 
     void detaliiCont() {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DETALII CONT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
         cout << Utilizator::utilizatori[this->numeCont];
+    }
+
+    void adaugaProdus(Produs* produs) {
+        catalog.adaugaProdus(produs);
+    }
+
+    Produs* cautaProdus(int id) {
+        return catalog.cautaProdus(id);
+    }
+
+    void stergeProdus(int id) {
+        catalog.stergeProdus(id);
+    }
+
+    const Catalog<Produs*>& getCatalog() const {
+        return catalog;
     }
 
     //constructor fara parametri
@@ -557,10 +606,7 @@ public:
     friend ostream &operator<<(ostream &out, Magazin *m) {
         out << " Numele utilizatorului conectat: " << m->numeCont;
         out << "\n Produse disponibile: \n";
-        for (const auto &pair: Produs::produse) {
-            Produs *ptr = pair.second;
-            out << ptr;
-        }
+        m->afisareCatalog();
         return out;
     }
 
@@ -580,11 +626,7 @@ public:
     void cumpara() override {
         Comanda comanda;
         comanda.numeUtilizator = numeCont;
-        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
-        for (const auto &pair: Produs::produse) {
-            Produs *ptr = pair.second;
-            cout << ptr;
-        }
+        afisareCatalog();
         cout << "\n ~~~~~~~~LA CUMPARATURILE DE PESTE 200 DE LEI BENEFICIATI DE 20% REDUCERE~~~~~~~~\n\n";
         cout << " CATE PRODUSE DORITI SA ACHIZITIONATI? ";
         cin >> comanda.nrProduse;
@@ -594,13 +636,13 @@ public:
             for (int i = 0; i < comanda.nrProduse; i++) {
                 cout << " INTRODUCETI ID-UL PRODUSULUI PENTRU A IL ADAUGA IN COS: ";
                 cin >> id;
-                if(Produs::produse.find(id) != Produs::produse.end()) {
-                    comanda.adaugaProdusInComanda(Produs::produse[id]);
+                Produs* produs = catalog.cautaProdus(id);
+                if (produs != nullptr) {
+                    comanda.adaugaProdusInComanda(produs);
                     cout << "PRODUS ADAUGAT IN COS!" << endl;
                 } else {
                     cout << "ID INVALID! PRODUSUL NU EXISTA." << endl;
                 }
-
             }
             if (comanda.pretTotal >= 200) {
                 comanda.setStrategy(new PretReducereStrategy());
@@ -610,7 +652,7 @@ public:
             float suma = comanda.getPretTotal();
             if (Utilizator::utilizatori[numeCont]->getBuget() >= suma) {
                 for (int idProdus : comanda.produseComandate) {
-                    Produs::produse.erase(idProdus);
+                    stergeProdus(idProdus);
                 }
                 cout << "\n TOTALUL DE PLATA: " << suma << endl;
                 cout << " Comanda a fost efectuata." << endl;
@@ -636,8 +678,10 @@ public:
         this->numeCont = "";
     }
     //polimorfism runtime(dinamic)
-    void cumpara() override { cout << endl << "Vanzatorul nu poate cumpara produse";}
-    static void adaugaProdus(Produs *produsNou) {
+    void cumpara() override {
+        cout << endl << "Vanzatorul nu poate cumpara produse";
+    }
+    void adaugaProdus(Produs *produsNou) {
         try
         {cout << "NUME PRODUS: ";
         string numeProdus;
@@ -655,7 +699,7 @@ public:
         float pretProdus;
         cin >> pretProdus;
         produsNou->setPret(pretProdus);
-        Produs::produse[produsNou->getID()] = produsNou;
+        catalog.adaugaProdus(produsNou);
         cout << "PRODUS ADAUGAT!\n";}
         catch (const Exceptie& e) {
             cerr << "Nu s-a putut adauga produsul: " << e.what() << endl;
@@ -678,7 +722,7 @@ public:
         this->numeCont = "";
     }
     void stergeProdus(int id) {
-        Produs::produse.erase(id);
-    };
+        catalog.stergeProdus(id);
+    }
 };
 #endif
