@@ -21,6 +21,13 @@ public:
     }
 };
 
+template <typename T>
+void printCollection(const T& collection) {
+    for (const auto& item : collection) {
+        cout << item ;
+    }
+}
+
 class Produs {
 private:
     string numeProdus;
@@ -188,7 +195,7 @@ public:
         this->setMarime(nouaMarime);
     };
     //polimorfism compile-time(static) - supraincarcarea functiilor
-    void updateMarime(Haina* haina) {
+    static void updateMarime(Haina* haina) {
         string nouaMarime;
         cin >> nouaMarime;
         haina->setMarime(nouaMarime);
@@ -537,10 +544,8 @@ public:
     }
 
     void afisareCatalog() const {
-        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << std::endl;
-        for (const auto& produs : produse) {
-            cout << produs;
-        }
+        cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ CATALOG ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
+        printCollection(produse);
     }
 
     T cautaProdus(int id) {
