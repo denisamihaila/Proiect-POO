@@ -1,0 +1,60 @@
+{
+  "produse": [
+    {
+      "id": 1,
+      "numeProdus": "rochie",
+      "culoare": "neagra",
+      "marime": "XS",
+      "pret": 79
+    },
+    {
+      "id": 2,
+      "numeProdus": "blugi",
+      "culoare": "albastri",
+      "marime": "L",
+      "pret": 120
+    },
+    {
+      "id": 3,
+      "numeProdus": "bluza",
+      "culoare": "rosie",
+      "marime": "M",
+      "pret": 47
+    },
+    {
+      "id": 4,
+      "numeProdus": "fusta",
+      "culoare": "verde",
+      "marime": "S",
+      "pret": 38
+    },
+    {
+      "id": 5,
+      "numeProdus": "bluza",
+      "culoare": "mov",
+      "marime": "XL",
+      "pret": 40
+    },
+    {
+      "id": 6,
+      "numeProdus": "pantaloni",
+      "culoare": "albi",
+      "marime": "S",
+      "pret": 89
+    },
+    {
+      "id": 7,
+      "numeProdus": "palarie",
+      "culoare": "maro",
+      "marime": "ONE-SIZE",
+      "pret": 34
+    },
+    {
+      "id": 8,
+      "numeProdus": "geaca",
+      "culoare": "alba",
+      "marime": "M",
+      "pret": 72
+    }
+  ]
+}

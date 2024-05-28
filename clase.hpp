@@ -200,6 +200,9 @@ class Utilizator : public enable_shared_from_this<Utilizator> {
 
 public:
     //getteri
+    static map<string, shared_ptr<Utilizator>> getUtilizatori() {
+        return utilizatori;
+    }
     string getNumeUtilizator() const {
         return numeUtilizator;
     }

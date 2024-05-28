@@ -1,12 +1,85 @@
 #include <iostream>
 #include <list>
 #include "clase.hpp"
+//#include "nlohmann/json.hpp"
 
+//using json = nlohmann::json;
 using namespace std;
+
+/*
+void importaProduse(Catalog<shared_ptr<Produs>>& catalog, const string& filePath) {
+    ifstream i(filePath);
+    json j;
+    i >> j;
+
+    for (const auto& item : j["produse"]) {
+        auto produs = make_shared<Produs>(
+                item["numeProdus"].get<string>(),
+                item["culoare"].get<string>(),
+                item["marime"].get<string>(),
+                item["pret"].get<float>()
+        );
+        Produs::initProduse(produs);
+        catalog.adaugaProdus(produs);
+    }
+}
+
+void importaUtilizatori(const string& filePath) {
+    ifstream i(filePath);
+    json j;
+    i >> j;
+
+    for (const auto& item : j["utilizatori"]) {
+        auto utilizator = make_shared<Utilizator>(
+                item["numeUtilizator"].get<string>(),
+                item["nume"].get<string>(),
+                item["email"].get<string>(),
+                item["parola"].get<string>(),
+                item["buget"].get<float>()
+        );
+        Utilizator::initUtilizatori(utilizator);
+    }
+}
+
+void exportaProduse(const Catalog<shared_ptr<Produs>>& catalog, const string& filePath) {
+    json j;
+    for (const auto& produs : catalog.getProduse()) {
+        j["produse"].push_back({
+                                       {"id", produs->getID()},
+                                       {"numeProdus", produs->getNumeProdus()},
+                                       {"culoare", produs->getCuloare()},
+                                       {"marime", produs->getMarime()},
+                                       {"pret", produs->getPret()}
+                               });
+    }
+    ofstream o(filePath);
+    o << setw(4) << j << endl;
+}
+
+void exportaUtilizatori(const string& filePath) {
+    json j;
+    for (const auto& pair : Utilizator::getUtilizatori()) {
+        const auto& utilizator = pair.second;
+        j["utilizatori"].push_back({
+                                           {"numeUtilizator", utilizator->getNumeUtilizator()},
+                                           {"nume", utilizator->getNume()},
+                                           {"email", utilizator->getEmail()},
+                                           {"parola", utilizator->getParola()},
+                                           {"buget", utilizator->getBuget()}
+                                   });
+    }
+    ofstream o(filePath);
+    o << setw(4) << j << endl;
+}
+*/
 
 int main() {
 
     Catalog<shared_ptr<Produs>> catalog;
+/*
+    importaProduse(catalog, "produse.json");
+    importaUtilizatori("utilizatori.json");
+*/
     auto p1 = make_shared<Produs>("rochie", "neagra", "XS", 79);
     auto p2 = make_shared<Produs>("blugi", "albastri", "L", 120);
     auto p3 = make_shared<Produs>("bluza", "rosie", "M", 47);
@@ -134,5 +207,9 @@ int main() {
 
     }
     delete hainaFactory;
+/*
+    exportaProduse(catalog, "produse_export.json");
+    exportaUtilizatori("utilizatori_export.json");
+*/
     return 0;
 }

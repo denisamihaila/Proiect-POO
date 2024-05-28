@@ -1,0 +1,32 @@
+{
+  "utilizatori": [
+    {
+      "numeUtilizator": "deni",
+      "nume": "mihaila denisa",
+      "email": "denisa.mihaila@s.unibuc.ro",
+      "parola": "123",
+      "buget": 420
+    },
+    {
+      "numeUtilizator": "andrei",
+      "nume": "popa andrei",
+      "email": "andrei.popa@s.unibuc.ro",
+      "parola": "parola",
+      "buget": 357
+    },
+    {
+      "numeUtilizator": "alexia",
+      "nume": "pascu alexia",
+      "email": "alexia.pascu@s.unibuc.ro",
+      "parola": "zoo",
+      "buget": 248
+    },
+    {
+      "numeUtilizator": "mircea",
+      "nume": "popescu mircea",
+      "email": "mircea.popescu@s.unibuc.ro",
+      "parola": "masini",
+      "buget": 100
+    }
+  ]
+}
