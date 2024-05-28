@@ -6,37 +6,53 @@ using namespace std;
 
 int main() {
 
-    Catalog<Produs*> catalog;
-    Produs p1("rochie", "neagra", "XS", 79);
-    Produs p2("blugi", "albastri", "L", 120);
-    Produs p3("bluza", "rosie", "M", 47);
-    Produs p4("fusta", "verde", "S", 38);
-    Produs p5("bluza", "mov", "XL", 40);
-    Produs p6("pantaloni", "albi", "S", 89);
-    Produs p7("palarie", "maro", "ONE-SIZE", 34);
-    Haina p8("geaca", "alba", "M", 72, "denim");
+    Catalog<shared_ptr<Produs>> catalog;
+    auto p1 = make_shared<Produs>("rochie", "neagra", "XS", 79);
+    auto p2 = make_shared<Produs>("blugi", "albastri", "L", 120);
+    auto p3 = make_shared<Produs>("bluza", "rosie", "M", 47);
+    auto p4 = make_shared<Produs>("fusta", "verde", "S", 38);
+    auto p5 = make_shared<Produs>("bluza", "mov", "XL", 40);
+    auto p6 = make_shared<Produs>("pantaloni", "albi", "S", 89);
+    auto p7 = make_shared<Produs>("palarie", "maro", "ONE-SIZE", 34);
+    auto p8 = make_shared<Haina>("geaca", "alba", "M", 72, "denim");
 
-    catalog.adaugaProdus(&p1);
-    catalog.adaugaProdus(&p2);
-    catalog.adaugaProdus(&p3);
-    catalog.adaugaProdus(&p4);
-    catalog.adaugaProdus(&p5);
-    catalog.adaugaProdus(&p6);
-    catalog.adaugaProdus(&p7);
-    catalog.adaugaProdus(&p8);
+    catalog.adaugaProdus(p1);
+    catalog.adaugaProdus(p2);
+    catalog.adaugaProdus(p3);
+    catalog.adaugaProdus(p4);
+    catalog.adaugaProdus(p5);
+    catalog.adaugaProdus(p6);
+    catalog.adaugaProdus(p7);
+    catalog.adaugaProdus(p8);
+
+    Produs::initProduse(p1);
+    Produs::initProduse(p2);
+    Produs::initProduse(p3);
+    Produs::initProduse(p4);
+    Produs::initProduse(p5);
+    Produs::initProduse(p6);
+    Produs::initProduse(p7);
+    Produs::initProduse(p8);
 
     ProdusFactory* hainaFactory = new HainaFactory();
-    Produs* haina = hainaFactory->createProdus("pulover", "mov", "L", 80);
+    shared_ptr<Produs> haina = hainaFactory->createProdus("pulover", "mov", "L", 80);
     catalog.adaugaProdus(haina);
+    Produs::initProduse(haina);
 
     //upcasting
-    Produs* p10 = new Haina("tricou", "gri", "XS", 15, "bumbac");
+    shared_ptr<Produs> p10 = make_shared<Haina>("tricou", "gri", "XS", 15, "bumbac");
     catalog.adaugaProdus(p10);
+    Produs::initProduse(p10);
 
-    Utilizator u1("deni", "mihaila denisa", "denisa.mihaila@s.unibuc.ro", "123", 420);
-    Utilizator u2("andrei", "popa andrei", "andrei.popa@s.unibuc.ro", "parola", 357);
-    Utilizator u3("alexia", "pascu alexia", "alexia.pascu@s.unibuc.ro", "zoo", 248);
-    Utilizator u4("mircea", "popescu mircea", "mircea.popescu@s.unibuc.ro", "masini", 100);
+    auto u1 = make_shared<Utilizator>("deni", "mihaila denisa", "denisa.mihaila@s.unibuc.ro", "123", 420);
+    auto u2 = make_shared<Utilizator>("andrei", "popa andrei", "andrei.popa@s.unibuc.ro", "parola", 357);
+    auto u3 = make_shared<Utilizator>("alexia", "pascu alexia", "alexia.pascu@s.unibuc.ro", "zoo", 248);
+    auto u4 = make_shared<Utilizator>("mircea", "popescu mircea", "mircea.popescu@s.unibuc.ro", "masini", 100);
+
+    Utilizator::initUtilizatori(u1);
+    Utilizator::initUtilizatori(u2);
+    Utilizator::initUtilizatori(u3);
+    Utilizator::initUtilizatori(u4);
 
     cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
     cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ VINTED ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
@@ -49,14 +65,14 @@ int main() {
     int tip;
     cin >> tip;
     //upcasting
-    Magazin* magazin = nullptr;
-    if(tip == 1)
-        magazin = new MagazinClient();
-    else if(tip == 2)
-        magazin = new MagazinVanzator();
+    unique_ptr<Magazin> magazin = nullptr;
+    if (tip == 1)
+        magazin = make_unique<MagazinClient>();
+    else if (tip == 2)
+        magazin = make_unique<MagazinVanzator>();
 
-    if(magazin != nullptr) {
-        for (Produs* produs : catalog.getProduse()) {
+    if (magazin != nullptr) {
+        for (const auto& produs : catalog.getProduse()) {
             magazin->adaugaProdus(produs);
         }
 
@@ -74,7 +90,8 @@ int main() {
         if (input == 1) {
             login->autentificare();
             magazin->setNumeCont(login->getNumeCont());
-        } else if (input == 2) {
+        }
+        else if (input == 2) {
             login->creareCont(contNou);
             magazin->setNumeCont(contNou.getNumeUtilizator());
         }
@@ -93,30 +110,28 @@ int main() {
             if (input == 1)
             {
                 magazin->detaliiCont();
-                if(tip == 1) cout << " TIP UTILIZATOR: CLIENT" << endl;
-                else if(tip == 2) cout << " TIP UTILIZATOR: VANZATOR" << endl;
+                if (tip == 1) cout << " TIP UTILIZATOR: CLIENT" << endl;
+                else if (tip == 2) cout << " TIP UTILIZATOR: VANZATOR" << endl;
             }
             else if (input == 2)
             {
-                if(tip == 1) cout << "Nu aveti permisiunea sa adaugati produse";
-                else if(tip == 2)
-                {auto *p_nou = new Produs;
-                magazin->adaugaProdus(p_nou);}
+                if (tip == 1) cout << "Nu aveti permisiunea sa adaugati produse";
+                else if (tip == 2)
+                {
+                    auto p_nou = make_shared<Produs>();
+                    magazin->adaugaProdus(p_nou);
+                }
             }
             else if (input == 3)
             {
-                if(tip == 1) magazin->cumpara();
+                if (tip == 1) magazin->cumpara();
                 else { magazin->afisareCatalog();
-                    cout << endl << "Nu aveti permisiunea de a cumpara produse";}
+                    cout << endl << "Nu aveti permisiunea de a cumpara produse"; }
             }
             else if (input == 4) break;
 
         } while (input != 4);
 
-        for (Produs *produs: catalog.getProduse()) {
-            delete produs;
-        }
-        delete magazin;
     }
     delete hainaFactory;
     return 0;

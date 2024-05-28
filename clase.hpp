@@ -7,16 +7,17 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <memory>
 
 using namespace std;
 
-class Exceptie : public exception{
+class Exceptie : public exception {
 private:
     string mesaj;
 public:
     explicit Exceptie(const string& message) : mesaj(message) {}
 
-    const char* what() const noexcept override{
+    const char* what() const noexcept override {
         return mesaj.c_str();
     }
 };
@@ -24,22 +25,22 @@ public:
 template <typename T>
 void printCollection(const T& collection) {
     for (const auto& item : collection) {
-        cout << item ;
+        cout << item;
     }
 }
 
-class Produs {
+class Produs : public enable_shared_from_this<Produs> {
 private:
     string numeProdus;
     string culoare;
     string marime; //XS, S, M, L, XL
-    float pret;
+    float pret{};
 protected:
     int id; //unic pentru fiecare produs
     static int IDprodus;
-    static map<int, Produs *> produse; //key = id produs
+    static map<int, shared_ptr<Produs>> produse; //key = id produs
     //polimorfism
-    virtual void updateMarime() { cout << "Modificam marimea produsului cu id-ul " << id << endl;};
+    virtual void updateMarime() { cout << "Modificam marimea produsului cu id-ul " << id << endl; };
 public:
     //getteri
     string getNumeProdus() const {
@@ -63,26 +64,26 @@ public:
     }
 
     //setteri
-    void setNumeProdus(string const &numeProd) {
-        if(numeProd.empty())
+    void setNumeProdus(string const& numeProd) {
+        if (numeProd.empty())
             throw Exceptie("Numele produsului trebuie sa aiba minim un caracter");
         this->numeProdus = numeProd;
     }
 
-    void setCuloare(string const &culoareP) {
-        if(culoareP.empty())
+    void setCuloare(string const& culoareP) {
+        if (culoareP.empty())
             throw Exceptie("Culoarea produsului trebuie sa aiba minim un caracter");
         this->culoare = culoareP;
     }
 
-    void setMarime(string const &marimeP) {
-        if(marimeP.empty())
+    void setMarime(string const& marimeP) {
+        if (marimeP.empty())
             throw Exceptie("Produsul trebuie sa aiba o marime disponibila");
         this->marime = marimeP;
     }
 
-    void setPret(float const &pretP) {
-        if(pretP < 0)
+    void setPret(float const& pretP) {
+        if (pretP < 0)
             throw Exceptie("Pretul produsului trebuie sa fie un numar pozitiv");
         this->pret = pretP;
     }
@@ -94,73 +95,40 @@ public:
         this->marime = "-";
         this->pret = 0;
         this->id = IDprodus++;
-        produse[this->id] = this;
     }
 
     //constructor cu parametri
-    /*Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret) {
-        assertm(!numeProdus.empty(), "Numele produsului trebuie sa aiba minim un caracter");
-        assertm(!culoare.empty(), "Culoarea produsului trebuie sa aiba minim un caracter");
-        assertm(!marime.empty(), "Produsul trebuie sa aiba o marime disponibila");
-        assertm(pret >= 0, "Pretul produsului trebuie sa fie un numar pozitiv");
-        this->numeProdus = numeProdus;
-        this->culoare = culoare;
-        this->marime = marime;
-        this->pret = pret;
-        this->id = IDprodus++;
-        produse[id] = this;
-    }*/
-
-    /*
-    Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret) :
-        numeProdus(numeProdus), culoare(culoare), marime(marime), pret(pret), id(IDprodus++) {
-        produse[id] = this;
-    }
-    */
-
-    Produs(string const &numeProdus, string const &culoare, string const &marime, float const &pret){
+    Produs(string const& numeProdus, string const& culoare, string const& marime, float const& pret) {
         try {
             setNumeProdus(numeProdus);
             setCuloare(culoare);
             setMarime(marime);
             setPret(pret);
             this->id = IDprodus++;
-            produse[id] = this;
-        } catch (const Exceptie& e) {
+        }
+        catch (const Exceptie& e) {
             cerr << "Nu s-a putut crea produsul: " << e.what() << endl;
         }
     }
 
     //constructor de copiere
-    Produs(const Produs &p) {
+    Produs(const Produs& p)  : enable_shared_from_this(p) {
         this->numeProdus = p.numeProdus;
         this->culoare = p.culoare;
         this->marime = p.marime;
         this->pret = p.pret;
         this->id = IDprodus++;
-        produse[this->id] = this;
     }
-    /*
-    //supraincarcare operator=
-    Produs &operator=(const Produs &p) {
-        this->numeProdus = p.numeProdus;
-        this->culoare = p.culoare;
-        this->marime = p.marime;
-        this->pret = p.pret;
-        this->id = IDprodus++;
-        produse[this->id] = this;
-        return *this;
-    }*/
 
     //destructor
     virtual ~Produs() = default;
 
-    friend istream &operator>>(istream &in, Produs &p) {
+    friend istream& operator>>(istream& in, Produs& p) {
         in >> p.numeProdus >> p.culoare >> p.marime >> p.pret;
         return in;
     }
 
-    friend ostream &operator<<(ostream &out, Produs *p) {
+    friend ostream& operator<<(ostream& out, const shared_ptr<Produs>& p) {
         out << " ID:" << p->getID() << ". " << p->getNumeProdus() << " " << p->getCuloare() << " " << p->getMarime()
             << " " << p->getPret() << " lei " << endl;
         return out;
@@ -172,18 +140,20 @@ public:
     friend class MagazinClient;
     friend class MagazinAdmin;
 
+    static void initProduse(const shared_ptr<Produs>& p) {
+        produse[p->getID()] = p;
+    }
 };
 
-class Haina : virtual public Produs{
+class Haina : public Produs {
 private:
     string material;
 public:
-    Haina(string const &numeProdus, string const &culoare, string const &marime, float const &pret, string const &material) :
-    Produs(numeProdus, culoare, marime, pret), material(material) {
-        produse[id] = this;
+    Haina(string const& numeProdus, string const& culoare, string const& marime, float const& pret, string const& material) :
+            Produs(numeProdus, culoare, marime, pret), material(material) {
     }
-    string getMaterial() {return material;}
-    friend ostream &operator<<(ostream &out, Haina *p) {
+    string getMaterial() { return material; }
+    friend ostream& operator<<(ostream& out, const shared_ptr<Haina>& p) {
         out << " ID:" << p->getID() << ". " << p->getNumeProdus() << " " << p->getMaterial() << " " << p->getCuloare() << " " << p->getMarime()
             << " " << p->getPret() << " lei " << endl;
         return out;
@@ -195,7 +165,7 @@ public:
         this->setMarime(nouaMarime);
     };
     //polimorfism compile-time(static) - supraincarcarea functiilor
-    static void updateMarime(Haina* haina) {
+    static void updateMarime(const shared_ptr<Haina>& haina) {
         string nouaMarime;
         cin >> nouaMarime;
         haina->setMarime(nouaMarime);
@@ -203,30 +173,30 @@ public:
 };
 
 int Produs::IDprodus = 1;
-map<int, Produs *> Produs::produse;
+map<int, shared_ptr<Produs>> Produs::produse;
 
 //Factory Method Pattern
 class ProdusFactory {
 public:
-    virtual Produs* createProdus(string const &numeProdus, string const &culoare, string const &marime, float const &pret) = 0;
+    virtual shared_ptr<Produs> createProdus(string const& numeProdus, string const& culoare, string const& marime, float const& pret) = 0;
     virtual ~ProdusFactory() = default;
 };
 
 class HainaFactory : public ProdusFactory {
 public:
-    Produs* createProdus(string const &numeProdus, string const &culoare, string const &marime, float const &pret) override {
-        return new Haina(numeProdus, culoare, marime, pret, "material implicit");
+    shared_ptr<Produs> createProdus(string const& numeProdus, string const& culoare, string const& marime, float const& pret) override {
+        return make_shared<Haina>(numeProdus, culoare, marime, pret, "material implicit");
     }
 };
 
 
-class Utilizator {
+class Utilizator : public enable_shared_from_this<Utilizator> {
     string numeUtilizator;
     string nume;
     string email;
     string parola;
     float buget;
-    static map<string, Utilizator *> utilizatori; //key = numeUtilizator  -  unic pt fiecare utilizator
+    static map<string, shared_ptr<Utilizator>> utilizatori; //key = numeUtilizator  -  unic pt fiecare utilizator
 
 public:
     //getteri
@@ -251,32 +221,32 @@ public:
     }
 
     //setteri
-    void setNumeUtilizator(string const &nume_utilizator) {
-        if(nume_utilizator.empty())
+    void setNumeUtilizator(string const& nume_utilizator) {
+        if (nume_utilizator.empty())
             throw Exceptie("Numele utilizatorului trebuie sa aiba minim un caracter");
         this->numeUtilizator = nume_utilizator;
     }
 
-    void setNume(string const &Nume) {
-        if(Nume.empty())
+    void setNume(string const& Nume) {
+        if (Nume.empty())
             throw Exceptie("Numele trebuie sa aiba minim un caracter");
         this->nume = Nume;
     }
 
-    void setEmail(string const &Email) {
-        if(Email.empty())
+    void setEmail(string const& Email) {
+        if (Email.empty())
             throw Exceptie("Emailul trebuie sa aiba minim un caracter");
         this->email = Email;
     }
 
-    void setParola(string const &Parola) {
-        if(Parola.empty())
+    void setParola(string const& Parola) {
+        if (Parola.empty())
             throw Exceptie("Parola trebuie sa aiba minim un caracter");
         this->parola = Parola;
     }
 
-    void setBuget(float const &Buget) {
-        if(Buget < 0)
+    void setBuget(float const& Buget) {
+        if (Buget < 0)
             throw Exceptie("Bugetul trebuie sa fie un numar pozitiv!\n");
         this->buget = Buget;
     }
@@ -288,50 +258,44 @@ public:
         this->email = "-";
         this->parola = "-";
         this->buget = 0.0;
-        utilizatori[numeUtilizator] = this;
     }
 
     //constructor cu parametri
-    Utilizator(string const &numeUtilizator, string const &nume, string const &email, string const &parola,
-               float const &buget) {
-        if(numeUtilizator.empty())
+    Utilizator(string const& numeUtilizator, string const& nume, string const& email, string const& parola,
+               float const& buget) {
+        if (numeUtilizator.empty())
             throw Exceptie("Numele utilizatorului trebuie sa aiba minim un caracter");
-        if(nume.empty())
+        if (nume.empty())
             throw Exceptie("Numele trebuie sa aiba minim un caracter");
-        if(email.empty())
+        if (email.empty())
             throw Exceptie("Emailul trebuie sa aiba minim un caracter");
-        if(parola.empty())
+        if (parola.empty())
             throw Exceptie("Parola trebuie sa aiba minim un caracter");
-        if(buget < 0)
+        if (buget < 0)
             throw Exceptie("Bugetul trebuie sa fie un numar pozitiv!");
         this->numeUtilizator = numeUtilizator;
         this->nume = nume;
         this->email = email;
         this->parola = parola;
         this->buget = buget;
-
-        utilizatori[numeUtilizator] = this;
-
     }
 
     //constructor de copiere
-    Utilizator(const Utilizator &u) {
+    Utilizator(const Utilizator& u)  : enable_shared_from_this(u) {
         this->numeUtilizator = u.numeUtilizator;
         this->nume = u.nume;
         this->email = u.email;
         this->parola = u.parola;
         this->buget = u.buget;
-        utilizatori[numeUtilizator] = this;
     }
 
     //supraincarcare operator=
-    Utilizator &operator=(const Utilizator &u) {
+    Utilizator& operator=(const Utilizator& u) {
         this->numeUtilizator = u.numeUtilizator;
         this->nume = u.nume;
         this->email = u.email;
         this->parola = u.parola;
         this->buget = u.buget;
-        utilizatori[numeUtilizator] = this;
         return *this;
     }
 
@@ -340,12 +304,12 @@ public:
         utilizatori.erase(numeUtilizator);
     }
 
-    friend istream &operator>>(istream &f, Utilizator &u) {
+    friend istream& operator>>(istream& f, Utilizator& u) {
         f >> u.numeUtilizator >> u.nume >> u.email >> u.parola >> u.buget;
         return f;
     }
 
-    friend ostream &operator<<(ostream &out, Utilizator *u) {
+    friend ostream& operator<<(ostream& out, const shared_ptr<Utilizator>& u) {
         out << " NUME UTILIZATOR: " << u->getNumeUtilizator() << endl;
         out << " NUME SI PRENUME: " << u->getNume() << endl;
         out << " EMAIL: " << u->getEmail() << endl;
@@ -359,9 +323,12 @@ public:
     friend class MagazinVanzator;
     friend class MagazinClient;
 
+    static void initUtilizatori(const shared_ptr<Utilizator>& u) {
+        utilizatori[u->getNumeUtilizator()] = u;
+    }
 };
 
-map<string, Utilizator *> Utilizator::utilizatori;
+map<string, shared_ptr<Utilizator>> Utilizator::utilizatori;
 
 //Strategy Pattern
 class PretStrategy {
@@ -390,40 +357,36 @@ private:
     string numeUtilizator;
     float pretTotal;
     vector<int> produseComandate; //id-urile produselor comandate
-    PretStrategy* strategy;
+    unique_ptr<PretStrategy> strategy;
 public:
 
     Comanda() : nrProduse(0), numeUtilizator("-"), pretTotal(0), strategy(new PretStandardStrategy()) {
         this->produseComandate = {};
     }
 
-    ~Comanda() {
-        delete strategy;
-    }
+    ~Comanda() = default;
 
-    void setStrategy(PretStrategy* s) {
-        if (strategy) {
-            delete strategy;
-        }
-        strategy = s;
+    void setStrategy(unique_ptr<PretStrategy> s) {
+        strategy = move(s);
     }
 
     float getPretTotal() {
         if (strategy) {
             return strategy->calculeazaPretFinal(pretTotal);
-        } else {
+        }
+        else {
             throw logic_error("Strategia de preț nu a fost setată.");
         }
     }
 
-    void adaugaProdusInComanda(Produs* produs) {
-        if(produs) {
+    void adaugaProdusInComanda(const shared_ptr<Produs>& produs) {
+        if (produs) {
             produseComandate.push_back(produs->getID());
             pretTotal += produs->getPret();
         }
     }
 
-    friend ostream &operator<<(ostream &out, Comanda *c) {
+    friend ostream& operator<<(ostream& out, Comanda* c) {
         out << " Numar de produse: " << c->nrProduse << endl;
         out << " Numele utilizatorului: " << c->numeUtilizator << endl;
         out << " Pret total: " << c->getPretTotal() << endl;
@@ -439,15 +402,16 @@ public:
 //Singleton Pattern
 class LogIn {
 private:
-    static LogIn* instance;
+    static unique_ptr<LogIn> instance;
     string numeCont;
     LogIn() {}
+
 public:
     static LogIn* getInstance() {
         if (instance == nullptr) {
-            instance = new LogIn();
+            instance = unique_ptr<LogIn>(new LogIn());
         }
-        return instance;
+        return instance.get();
     }
     void autentificare() {
         cout << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ AUTENTIFICARE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " << endl;
@@ -475,7 +439,6 @@ public:
                     cout << endl;
                 } while (Utilizator::utilizatori[numeIntrodus]->getParola() != parolaIntrodusa);
             if (Utilizator::utilizatori[numeIntrodus]->getParola() == parolaIntrodusa) {
-                //this->numeCont = numeIntrodus;
                 cout << " V-ati conectat cu succes!\n";
             }
         }
@@ -501,7 +464,7 @@ public:
         cin >> numeFamilie;
         cout << "PRENUME: ";
         string prenume;
-        cin >> prenume;    //sa imi suprascriu functia de citire cu tot cu mesaje
+        cin >> prenume;
         string nume;
         nume = numeFamilie + " " + prenume;
         contNou.setNume(nume);
@@ -518,7 +481,7 @@ public:
         cin >> buget;
         contNou.setBuget(buget);
         cout << "Felicitari! V-ati creat noul cont." << endl;
-        Utilizator::utilizatori[contNou.getNumeUtilizator()] = &contNou;
+        Utilizator::utilizatori[contNou.getNumeUtilizator()] = make_shared<Utilizator>(contNou);
         numeCont = numeUtilizator;
     }
     //getter nume cont
@@ -527,7 +490,7 @@ public:
     }
 };
 
-LogIn* LogIn::instance = nullptr;
+unique_ptr<LogIn> LogIn::instance = nullptr;
 
 template<typename T>
 class Catalog {
@@ -540,7 +503,7 @@ public:
 
     void stergeProdus(int id) {
         produse.erase(remove_if(produse.begin(), produse.end(),
-                                     [id](const T& produs) { return produs->getID() == id; }), produse.end());
+                                [id](const T& produs) { return produs->getID() == id; }), produse.end());
     }
 
     void afisareCatalog() const {
@@ -552,7 +515,7 @@ public:
         auto it = find_if(produse.begin(), produse.end(),
                           [id](const T& produs) { return produs->getID() == id; });
         if (it != produse.end()) {
-            return *it; // Return the actual pointer stored in the vector
+            return *it;
         }
         return nullptr;
     }
@@ -565,12 +528,12 @@ public:
 class Magazin {
 protected:
     string numeCont;
-    Catalog<Produs*> catalog;
+    Catalog<shared_ptr<Produs>> catalog;
 public:
     //polimorfism runtime(dinamic)
     virtual void cumpara() = 0;
     //setter
-    void setNumeCont(string const &numecont) {
+    void setNumeCont(string const& numecont) {
         this->numeCont = numecont;
     }
 
@@ -583,11 +546,11 @@ public:
         cout << Utilizator::utilizatori[this->numeCont];
     }
 
-    void adaugaProdus(Produs* produs) {
+    void adaugaProdus(const shared_ptr<Produs>& produs) {
         catalog.adaugaProdus(produs);
     }
 
-    Produs* cautaProdus(int id) {
+    shared_ptr<Produs> cautaProdus(int id) {
         return catalog.cautaProdus(id);
     }
 
@@ -595,7 +558,7 @@ public:
         catalog.stergeProdus(id);
     }
 
-    const Catalog<Produs*>& getCatalog() const {
+    const Catalog<shared_ptr<Produs>>& getCatalog() const {
         return catalog;
     }
 
@@ -608,7 +571,7 @@ public:
         this->numeCont = "";
     }
 
-    friend ostream &operator<<(ostream &out, Magazin *m) {
+    friend ostream& operator<<(ostream& out, Magazin* m) {
         out << " Numele utilizatorului conectat: " << m->numeCont;
         out << "\n Produse disponibile: \n";
         m->afisareCatalog();
@@ -641,18 +604,20 @@ public:
             for (int i = 0; i < comanda.nrProduse; i++) {
                 cout << " INTRODUCETI ID-UL PRODUSULUI PENTRU A IL ADAUGA IN COS: ";
                 cin >> id;
-                Produs* produs = catalog.cautaProdus(id);
+                shared_ptr<Produs> produs = catalog.cautaProdus(id);
                 if (produs != nullptr) {
                     comanda.adaugaProdusInComanda(produs);
                     cout << "PRODUS ADAUGAT IN COS!" << endl;
-                } else {
+                }
+                else {
                     cout << "ID INVALID! PRODUSUL NU EXISTA." << endl;
                 }
             }
             if (comanda.pretTotal >= 200) {
-                comanda.setStrategy(new PretReducereStrategy());
-            } else {
-                comanda.setStrategy(new PretStandardStrategy());
+                comanda.setStrategy(make_unique<PretReducereStrategy>());
+            }
+            else {
+                comanda.setStrategy(make_unique<PretStandardStrategy>());
             }
             float suma = comanda.getPretTotal();
             if (Utilizator::utilizatori[numeCont]->getBuget() >= suma) {
@@ -664,7 +629,8 @@ public:
                 float bugetCurent = Utilizator::utilizatori[numeCont]->getBuget();
                 bugetCurent -= suma;
                 Utilizator::utilizatori[numeCont]->setBuget(bugetCurent);
-            } else {
+            }
+            else {
                 cout << "\n FONDURI INSUFICIENTE. COMANDA NU A PUTUT FI PLASATA :( \n";
             }
         }
@@ -673,7 +639,7 @@ public:
 
 };
 
-class MagazinVanzator : virtual public Magazin{
+class MagazinVanzator : virtual public Magazin {
 public:
     MagazinVanzator() {
         this->numeCont = "-";
@@ -686,33 +652,33 @@ public:
     void cumpara() override {
         cout << endl << "Vanzatorul nu poate cumpara produse";
     }
-    void adaugaProdus(Produs *produsNou) {
+    void adaugaProdus(const shared_ptr<Produs>& produsNou) {
         try
-        {cout << "NUME PRODUS: ";
-        string numeProdus;
-        cin >> numeProdus;
-        produsNou->setNumeProdus(numeProdus);
-        cout << "CULOARE: ";
-        string culoareProdus;
-        cin >> culoareProdus;
-        produsNou->setCuloare(culoareProdus);
-        cout << "MARIME: ";
-        string marimeProdus;
-        cin >> marimeProdus;
-        produsNou->setMarime(marimeProdus);
-        cout << "PRET: ";
-        float pretProdus;
-        cin >> pretProdus;
-        produsNou->setPret(pretProdus);
-        catalog.adaugaProdus(produsNou);
-        cout << "PRODUS ADAUGAT!\n";}
+        {
+            cout << "NUME PRODUS: ";
+            string numeProdus;
+            cin >> numeProdus;
+            produsNou->setNumeProdus(numeProdus);
+            cout << "CULOARE: ";
+            string culoareProdus;
+            cin >> culoareProdus;
+            produsNou->setCuloare(culoareProdus);
+            cout << "MARIME: ";
+            string marimeProdus;
+            cin >> marimeProdus;
+            produsNou->setMarime(marimeProdus);
+            cout << "PRET: ";
+            float pretProdus;
+            cin >> pretProdus;
+            produsNou->setPret(pretProdus);
+            catalog.adaugaProdus(produsNou);
+            cout << "PRODUS ADAUGAT!\n";
+        }
         catch (const Exceptie& e) {
             cerr << "Nu s-a putut adauga produsul: " << e.what() << endl;
         }
     }
-    static void puneProdusul(Produs *produsNou){
-        Produs::produse[produsNou->getID()] = produsNou;
-    }
+
 };
 
 class MagazinAdmin : virtual public MagazinVanzator, virtual public MagazinClient {
@@ -730,4 +696,5 @@ public:
         catalog.stergeProdus(id);
     }
 };
+
 #endif
