@@ -675,6 +675,7 @@ public:
             cin >> pretProdus;
             produsNou->setPret(pretProdus);
             catalog.adaugaProdus(produsNou);
+            Produs::initProduse(produsNou);
             cout << "PRODUS ADAUGAT!\n";
         }
         catch (const Exceptie& e) {

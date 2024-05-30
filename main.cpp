@@ -192,7 +192,7 @@ int main() {
                 else if (tip == 2)
                 {
                     auto p_nou = make_shared<Produs>();
-                    magazin->adaugaProdus(p_nou);
+                    dynamic_cast<MagazinVanzator*>(magazin.get())->adaugaProdus(p_nou);
                 }
             }
             else if (input == 3)
