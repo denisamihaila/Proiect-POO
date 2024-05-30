@@ -1,3 +1,22 @@
+/*
+#Design patterns
+    Singleton: LogIn
+    Factory Method Pattern: ProdusFactory, HainaFactory
+    Strategy Pattern: PretStrategy, PretStandardStrategy, PretReducereStrategy
+#Clasa sablon
+    class Catalog
+#Functie sablon
+    void printCollection()
+#STL
+    string, map, vector, list
+#Functii din <algorithm>
+    find, find_if, remove_if, move
+#Smart Pointers
+    shared_ptr: produs, haina, catalog
+    unique_ptr<PretStrategy> strategy; unique_ptr<LogIn> instance
+#Bonus
+    Am incercat...
+ */
 #ifndef clase
 #define clase
 

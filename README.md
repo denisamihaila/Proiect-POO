@@ -33,3 +33,19 @@ Logica principală este conținută în fișierul `main.cpp`, care creează inst
 ### Curățarea Memoriei
 Aplicația alocă dinamic memorie pentru produse și utilizează pointeri inteligenți pentru eliberarea automată la terminarea executării, asigurând astfel absența scurgerilor de memorie.
 
+### Am mai implementat: 
+#Design patterns
+Singleton: LogIn
+Factory Method Pattern: ProdusFactory, HainaFactory
+Strategy Pattern: PretStrategy, PretStandardStrategy, PretReducereStrategy
+#Clasa sablon
+class Catalog
+#Functie sablon
+void printCollection()
+#STL
+string, map, vector, list
+#Functii din <algorithm>
+find, find_if, remove_if, move
+#Smart Pointers
+shared_ptr: produs, haina, catalog
+unique_ptr<PretStrategy> strategy; unique_ptr<LogIn> instance

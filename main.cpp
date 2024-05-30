@@ -209,7 +209,7 @@ int main() {
     delete hainaFactory;
 /*
     exportaProduse(catalog, "produse_export.json");
-    exportaUtilizatori("utilizatori_export.json");
+    exportaUtilizatori(utilizatori, "utilizatori_export.json");
 */
     return 0;
 }
