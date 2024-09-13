@@ -1,5 +1,5 @@
 # Magazin Online - Vinted
-Proiect inspirat din aplicația Vinted
+Un proiect foarte drag mie, inspirat din aplicația Vinted
 
 ## Descriere
 Aceasta este o aplicație de tip magazin online, unde orice utilizator poate ori să își vândă hainele pe care nu le mai folosește, ori să cumpere hainele altor persoane.
