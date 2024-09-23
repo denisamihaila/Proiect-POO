@@ -44,7 +44,7 @@ class Catalog
 void printCollection()
 # STL
 string, map, vector, list
-# Functii din <algorithm>
+# Functii din biblioteca algorithm
 find, find_if, remove_if, move
 # Smart Pointers
 shared_ptr: produs, haina, catalog
