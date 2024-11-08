@@ -16,8 +16,6 @@ The project demonstrates OOP concepts such as **encapsulation**, **inheritance**
 - [Code Highlights](#code-highlights)
 - [Future Improvements](#future-improvements)
 
----
-
 ## 🚀 Features
 
 - **Product Catalog**: Users can view available products with details such as price, description, and stock status.
@@ -26,8 +24,6 @@ The project demonstrates OOP concepts such as **encapsulation**, **inheritance**
 - **Checkout Process**: Simulate a checkout process with basic validation and order summary.
 - **Exception Handling**: Robust error management to handle invalid inputs and system exceptions gracefully.
 - **Scalability**: Modular design allows for easy extension of features.
-
----
 
 ## 📂 Project Structure
 
@@ -51,8 +47,6 @@ The main program (`main.cpp`) initializes classes and controls the application�
 2. **Display Product List**: Lists all products for the user.
 3. **Cart Operations**: Users can add, modify, or remove products in their cart.
 4. **Checkout**: Provides a summary of the order and validates the transaction.
-
----
 
 ## 📐 Concepts and Techniques Used
 
@@ -85,8 +79,6 @@ To manage memory dynamically and prevent memory leaks, the project uses smart po
 - **Overloading and Operator Overloading**: Custom operators are implemented for specific classes, improving usability and readability.
 - **Inheritance and Polymorphism**: Core OOP principles, including polymorphic behavior through virtual functions, allow the project to manage different product types and user roles efficiently.
 
----
-
 ## 📝 Usage
 
 Once the program is running, the user can navigate through a series of options to simulate shopping online. Follow the on-screen prompts to explore features.
@@ -99,8 +91,6 @@ Once the program is running, the user can navigate through a series of options t
 4. **Review Cart**: View items in the cart, update quantities, or remove items.
 5. **Checkout**: Finalize the purchase, review order details, and confirm.
 
----
-
 ## ✨ Code Highlights
 
 This project emphasizes several C++ and OOP best practices:
@@ -109,8 +99,6 @@ This project emphasizes several C++ and OOP best practices:
 2. **Inheritance and Polymorphism**: Different classes inherit from base classes and override methods where needed, allowing for flexible and reusable code.
 3. **Error Handling**: Try-catch blocks handle invalid input and other runtime exceptions, improving the user experience.
 4. **Efficiency**: Code is structured to minimize redundancy and optimize performance, ensuring smooth execution.
-
----
 
 ## 🔧 Future Improvements
 
