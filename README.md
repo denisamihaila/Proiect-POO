@@ -7,15 +7,6 @@ Welcome to the **Online Store** project! This application is designed as part of
 
 The project demonstrates OOP concepts such as **encapsulation**, **inheritance**, and **polymorphism** while implementing practical functionality relevant to e-commerce applications.
 
-## 📑 Table of Contents
-
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Concepts and Techniques Used](#concepts-and-techniques-used)
-- [Usage](#usage)
-- [Code Highlights](#code-highlights)
-- [Future Improvements](#future-improvements)
-
 ## 🚀 Features
 
 - **Product Catalog**: Users can view available products with details such as price, description, and stock status.
