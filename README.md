@@ -1,6 +1,5 @@
 # 🛒 Online Store - Object-Oriented Programming Project
 
----
 
 ## Overview
 
